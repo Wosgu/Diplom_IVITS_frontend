@@ -1,0 +1,99 @@
+/* Общий контейнер */
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    text-align: center;
+  }
+  
+  /* Кнопки переключения */
+  .toggle-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .toggle-buttons button {
+    width: 50%;
+    padding: 10px;
+    border: none;
+    background: #ddd;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  
+  .toggle-buttons button.active {
+    background: rgb(0, 85, 255);
+    color: white;
+  }
+  
+  /* Форма */
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .auth-form h2 {
+    margin-bottom: 15px;
+  }
+  
+  .auth-form input,
+  .auth-form select {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .auth-form button {
+    background: rgb(0, 85, 255);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+  }
+  
+  .auth-form button:hover {
+    background: rgb(0, 65, 200);
+  }
+/* Контейнер для поля пароля */
+.password-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+  }
+  
+  /* Поле ввода пароля */
+  .password-container input {
+    display: flex;
+    width: 100%;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  /* Кнопка-глаз (внутри поля) */
+  .eye-button {
+    position:absolute;
+    right: 0px;
+    top: -3.8px;
+    height:37px;
+    color: #888;
+    display: flex;
+    align-items: center;
+  }
+  
+  .eye-button:hover {
+    color: #555;
+  }
+  

@@ -1,8 +1,8 @@
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 import { FaVk, FaTelegram } from "react-icons/fa";
-import "./index.css";
+import './about.css';
 
-export const MainPage = () => {
+export const About = () => {
   const navigate = useNavigate();
 
   return (
@@ -20,12 +20,28 @@ export const MainPage = () => {
             <li><Link to="/museum">Музей</Link></li>
           </ul>
         </nav>
-        <button className="login-btn" onClick={() => navigate("/login")}>Войти</button>
+        <button className="login-btn" onClick={() => navigate('/login')}>Войти</button>
       </header>
+
+      <div className="about-content">
+        <h2>О нашем институте</h2>
+        <p>Высшая ИТ-Школа — это современный образовательный центр, готовящий специалистов в сфере информационных технологий.</p>
+
+        <h3>Наши направления:</h3>
+        <ul>
+          <li>Разработка программного обеспечения</li>
+          <li>Кибербезопасность</li>
+          <li>Сетевые технологии</li>
+          <li>Искусственный интеллект</li>
+        </ul>
+
+        <h3>Почему выбирают нас?</h3>
+        <p>Наши преподаватели — эксперты в своих областях, а студенты получают не только теоретические знания, но и практические навыки.</p>
+      </div>
 
       <footer className="footer">
         <div className="footer-content">
-          <div className="social-icons">
+<div className="social-icons">
             <a href="https://vk.com" target="_blank" rel="noopener noreferrer"><FaVk size={24} /></a>
             <a href="https://t.me" target="_blank" rel="noopener noreferrer"><FaTelegram size={24} /></a>
           </div>

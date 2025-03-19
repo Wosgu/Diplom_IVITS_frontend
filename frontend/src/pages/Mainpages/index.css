@@ -5,80 +5,194 @@
     min-height: 100%;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
+    /*background-image: url('/public/backgroungimg.jpg');*/
   }
-  .header {
-    display: flex;
-    justify-content: space-around; 
-    align-items: center;
-    height: 5em;
-    background-color: #ffffff;
-    color: rgb(0, 85, 255);
-    width: 100%;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+.header {
+  display: flex;
+  justify-content: space-around; 
+  align-items: center;
+  height: 5em;
+  background-color: #ffffff;
+  color: rgb(0, 85, 255);
+  width: 100%;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+}
+.logo h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: rgb(0, 85, 255);
+}
+.nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+.nav ul li {
+  margin: 0 15px; 
+}
+.nav a {
+  text-decoration: none;
+  color: rgb(0, 85, 255);
+  font-size: 16px;
+  font-weight: bold;
+}
+.nav a:hover {
+  text-decoration: underline;
+}
+.login-btn {
+  background-color: rgb(0, 85, 255);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+.login-btn:hover {
+  background-color: rgb(0, 65, 200);
+}
+/* Стили для подвала */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+.footer-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.social-icons a {
+  margin: 0 10px;
+  color: #fff;
+  text-decoration: none;
+}
+.social-icons a:hover {
+  color: #1e90ff;
+}
+.address, .contact-info {
+  margin: 10px 0;
+}
+.address p, .contact-info p {
+  margin: 5px 0;
+}
+.footer p {
+  font-size: 14px;
+}
+
+/*Наполнение страницы*/
+.banner{
+  margin-top: 10px;
+  height: 500px;
+  border: 1px solid;
+}
+.banner img {
+  width: 100%; /* Изображение будет занимать всю ширину контейнера */
+  height: 100%; /* Изображение будет занимать всю высоту контейнера */
+  object-fit: cover; /* Изображение будет масштабироваться, чтобы покрыть контейнер */
+}
+/*информационное видео и новости*/
+.index-info{
+  display: flex;
+  flex-direction:row;
+  margin: 50px;
+}
+.rolikvits{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  border: 1px solid;
+}
+.rolikvits iframe {
+  width: 100%; /* Изображение будет занимать всю ширину контейнера */
+  height: 70%; /* Изображение будет занимать всю высоту контейнера */
+  object-fit: cover; /* Изображение будет масштабироваться, чтобы покрыть контейнер */
+}
+.nov_ivits{
+  animation: colorChange 5s infinite; /* Анимация длится 5 секунд и повторяется бесконечно */
+  font-size: 24px; /* Размер текста */
+  font-weight: bold; /* Жирный шрифт */
+  text-align: center; /* Выравнивание по центру */
+}
+.info-ivits-small{
+  display: flex;
+  flex-direction:column;
+  width: 50%;
+  height: 100%;
+  margin-left: 30px;
+  border: 1px solid;
+}
+.small-inf0-1{
+  display: flex;
+  border-radius: 30px;
+  height: 150px;
+  background-color: #ffffff;
+  margin: 10px;
+  border: 1px solid;
+}
+.small-inf0-1 img{
+  width: 30%;
+  border-radius: 30px;
+}
+.name-descr{
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  width: 70%;
+}
+.named-info{
+  font-weight: bold;
+  height: 30%;
+}
+.description-info{
+  height: 70%;
+  width: 90%;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+/*Программы обучения*/
+.programm-training{
+  display: flex;
+  flex-direction: column;
+  margin: 30px;
+  border: 1px solid;
+}
+.programm-h{
+  color: black;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+}
+.prorgam-test1{
+  display: flex;
+  background-color: #ffffff;
+  margin: 10px;
+  border: 1px solid;
+}
+
+
+/*Анимация переливания, если нужна будет где-то*/
+@keyframes colorChange {
+  0% {
+    color: #ff0000; /* Красный */
   }
-  .logo h1 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: bold;
+  25% {
+    color: #159815; /* Зелёный */
   }
-  .nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
+  50% {
+    color: #0000ff; /* Синий */
   }
-  .nav ul li {
-    margin: 0 15px; 
+  75% {
+    color: #ff00ff; /* Фиолетовый */
   }
-  .nav a {
-    text-decoration: none;
-    color: rgb(0, 85, 255);
-    font-size: 16px;
-    font-weight: bold;
+  100% {
+    color: #ff0000; /* Красный */
   }
-  .nav a:hover {
-    text-decoration: underline;
-  }
-  .login-btn {
-    background-color: rgb(0, 85, 255);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-  }
-  .login-btn:hover {
-    background-color: rgb(0, 65, 200);
-  }
-  /* Стили для подвала */
-  .footer {
-    background-color: #333;
-    color: #fff;
-    padding: 20px 0;
-    text-align: center;
-  }
-  .footer-content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .social-icons a {
-    margin: 0 10px;
-    color: #fff;
-    text-decoration: none;
-  }
-  .social-icons a:hover {
-    color: #1e90ff;
-  }
-  .address, .contact-info {
-    margin: 10px 0;
-  }
-  .address p, .contact-info p {
-    margin: 5px 0;
-  }
-  .footer p {
-    font-size: 14px;
-  }
+}

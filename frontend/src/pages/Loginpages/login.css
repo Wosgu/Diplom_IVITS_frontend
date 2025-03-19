@@ -96,4 +96,9 @@
   .eye-button:hover {
     color: #555;
   }
-  
+  .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+  }

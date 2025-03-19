@@ -1,32 +1,87 @@
 .abitur-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+.priv{
+    display: flex;
+    margin: 50px;
+    justify-content: center;
+    size: 24px;
+}
+.video-abitur{
+    display: flex;
+    justify-content:center;
+    height: 500px;/*высота*/
+    width: 99.9%;
+    border: 1px solid;
+}
+.video-abitur iframe {
+    width: 100%; /* Изображение будет занимать всю ширину контейнера */
+    height: 100%; /* Изображение будет занимать всю высоту контейнера */
+    object-fit: cover; /* Изображение будет масштабироваться, чтобы покрыть контейнер */
+}
+.zag-info{
+    display: flex;
+    justify-content: center;
+    text-wrap:initial;
+    margin-top: 50px;
+}
+.small-info{
+    display: flex;  
+    font-size: x-large;
+    margin: 70px;
+}
+.plushki{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.plushka{
+    display: flex;
+    width: 48%;
+    margin: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+.plushka img{
+    margin-right: 50px;
+    margin-left: 20px;
+    height: 200px;
+}
+.info-plushka{
+    display: flex;
+    flex-direction: column;
+    padding-right: 20px;
+}
+.zag-plushka{
+    display: flex;
+}
+.descr-plushka{
+    display: flex;
 }
 
-h2 {
-    text-align: center;
-    color: #333;
-}
-
-section {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-h3 {
-    color: #0056b3;
-}
-
-ul {
-    color: #444;
+.toggle-button {
+    padding: 10px 20px;
     font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
 }
 
-ul {
-    padding-left: 20px;
+.table-container {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
 }

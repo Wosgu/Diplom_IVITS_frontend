@@ -9,7 +9,9 @@ export const Stud = () =>{
         <>
         <header className="header">
             <div className="logo">
-            <h1>Высшая ИТ-Школа</h1>
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                    <h1>Высшая ИТ-Школа</h1>
+                </Link>
             </div>
             <nav className="nav">
             <ul>

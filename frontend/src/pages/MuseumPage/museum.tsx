@@ -32,7 +32,7 @@ export const Museum = () => {
 
     // Запрос данных об экспонатах с бэкенда
     useEffect(() => {
-        axios.get('http://26.43.50.46:8000/api/audiences/')
+        axios.get('https://tamik327.pythonanywhere.com/api/audiences/')
             .then(response => {
                 setExhibits(response.data);
             })

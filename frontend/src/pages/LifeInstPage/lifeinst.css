@@ -26,7 +26,10 @@ h2 {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
+.checkbox-novosti h4 {
+    margin-bottom: 15px;
+    color: #0056b3;
+}
 .checkbox-label {
     display: flex;
     align-items: center;
@@ -34,7 +37,9 @@ h2 {
     cursor: pointer;
     font-size: 16px;
 }
-
+.checkbox-label:hover {
+    background-color: #f0f0f0;
+}
 .checkbox-label input {
     display: none; /* Скрываем стандартный чекбокс */
 }
@@ -80,49 +85,232 @@ h2 {
     padding: 10px;
 }
 
+/* Новые стили для обновленного дизайна */
 .novost-item {
-    width: 90%; /* Новости занимают всю ширину */
-    margin-left: 40px;
-    height: 150px; /* Высота новости */
-    background-color: #e0e0e0;
+    width: 90%;
+    margin: 20px 40px;
+    background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    padding: 15px;
+    padding: 20px;
     transition: transform 0.2s, box-shadow 0.2s;
-    overflow: hidden;
 }
 
-.novost-item:hover {
-    transform: translateY(-5px); /* Эффект поднятия при наведении */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+
+.title-date {
+    margin-bottom: 10px;
 }
 
-/* Пример стилей для контента внутри новости */
-.novost-item img {
-    width: 100px;
-    height: 100px;
-    border-radius: 8px;
-    margin-right: 15px;
+.publish-date {
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 5px;
 }
 
-.novost-item-content {
-    flex: 1;
+.tags {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
 }
 
-.novost-item-content h3 {
-    margin: 0;
-    font-size: 18px;
-    color: #0056b3;
+.tag {
+    background-color: #0056b3;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
 }
 
 .novost-item-content p {
-    margin: 5px 0 0;
-    font-size: 14px;
     color: #333;
-    width: 90%;
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    line-height: 1.6;
+    margin: 10px 0;
 }
+
+.expand-btn {
+    background: none;
+    border: none;
+    color: #0056b3;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 5px;
+}
+
+.expand-btn:hover {
+    text-decoration: underline;
+}
+
+.interactions {
+    display: flex;
+    gap: 25px;
+    margin: 20px 0;
+    padding: 15px 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.interaction-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.interaction-item:hover {
+    color: #0056b3;
+}
+
+.comments-section {
+    margin-top: 15px;
+}
+
+.comment {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-header {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    margin-bottom: 5px;
+}
+
+.username {
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+.comment-date {
+    color: #666;
+    font-size: 0.8em;
+}
+
+.comment-text {
+    font-size: 0.9em;
+    color: #444;
+    line-height: 1.4;
+}
+
+.show-comments-btn {
+    background: none;
+    border: none;
+    color: #0056b3;
+    cursor: pointer;
+    padding: 5px 0;
+    font-size: 0.9em;
+}
+
+.show-comments-btn:hover {
+    text-decoration: underline;
+}
+
+/* Стили для кастомного слайдера */
+.custom-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  /* Стили для обычного изображения (без слайдера) */
+  .single-image {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  
+  /* Стили для слайдера */
+  .slider-images {
+    position: relative;
+    height: 300px;
+  }
+  
+  .slider-images .news-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .slider-images .news-image.active {
+    opacity: 1;
+  }
+  
+  /* Остальные стили слайдера */
+  .slider-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 15px;
+  }
+  
+  .slider-arrow {
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .slider-arrow:hover {
+    background: rgba(0, 86, 179, 0.8);
+    color: white;
+  }
+  
+  .slider-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+  
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .dot.active {
+    background: #0056b3;
+    transform: scale(1.2);
+  }
+  
+  .dot:hover {
+    background: rgba(0, 86, 179, 0.8);
+  }

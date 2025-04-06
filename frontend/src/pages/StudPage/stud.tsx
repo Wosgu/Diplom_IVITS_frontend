@@ -1,9 +1,59 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { FaVk, FaTelegram } from "react-icons/fa";
+import axios from 'axios';
 import './stud.css';
+
+// Интерфейс для новости
+interface NewsItem {
+    id: number;
+    title: string;
+    content: string;
+    images: Array<{
+      id: number;
+      image: string; // URL изображения
+    }>;
+    created_at: string;
+    updated_at: string;
+    is_published: boolean;
+    author: {
+      id: number;
+      username: string;
+      email: string;
+    };
+    category: number;
+    tags: number[];
+    comments_count: number;
+    likes_count: number;
+}
 
 export const Stud = () =>{
     const navigate = useNavigate();
+    const [news, setNews] = useState<NewsItem[]>([]); // Состояние для хранения новостей
+    const [loading, setLoading] = useState(true); // Состояние для загрузки
+    const [error, setError] = useState<string | null>(null); // Состояние для ошибок
+
+      // Загрузка новостей с бэкенда
+    useEffect(() => {
+        axios.get<NewsItem[]>("https://tamik327.pythonanywhere.com/api/news/")
+        .then(response => {
+            const category2News = response.data.filter(item => item.category === 2);
+            setNews(category2News);
+            setLoading(false);
+        })
+        .catch(error => {
+            console.error("Ошибка при получении новостей:", error);
+            setError("Не удалось загрузить новости. Пожалуйста, попробуйте позже.");
+            setLoading(false);
+        });
+    }, []);
+    // Функция для получения первого изображения
+    const getFirstImageUrl = (images: Array<{ id: number; image: string }>): string => {
+        if (images.length > 0) {
+        return images[0].image; // Возвращаем URL первого изображения
+        }
+        return "/path/to/placeholder/image.png"; // Возвращаем URL заглушки, если изображений нет
+    };
 
     return (
         <>
@@ -25,39 +75,39 @@ export const Stud = () =>{
             <button className="login-btn" onClick={() => navigate('/login')}>Войти</button>
         </header>
 
-        <div className="abitur-container">
-            <h2>Студенту</h2>
-            
-            <section className="admission-conditions">
-                <h3>Условия поступления</h3>
-                <p>Поступление в Высшую ИТ-Школу осуществляется на основе результатов ЕГЭ или внутренних экзаменов.</p>
-            </section>
-
-            <section className="documents-required">
-                <h3>Необходимые документы</h3>
-                <ul>
-                    <li>Паспорт</li>
-                    <li>Аттестат о среднем образовании</li>
-                    <li>Сертификат ЕГЭ</li>
-                    <li>Медицинская справка</li>
-                    <li>Фотографии 3x4 (4 шт.)</li>
-                </ul>
-            </section>
-
-            <section className="admission-deadlines">
-                <h3>Сроки подачи документов</h3>
-                <p>Прием документов начинается с 1 июня и заканчивается 31 июля.</p>
-            </section>
-
-            <section className="benefits">
-                <h3>Почему стоит выбрать нас?</h3>
-                <ul>
-                    <li>Современные учебные программы</li>
-                    <li>Преподаватели с опытом в IT-индустрии</li>
-                    <li>Практика в ведущих IT-компаниях</li>
-                    <li>Гарантированное трудоустройство лучших выпускников</li>
-                </ul>
-            </section>
+        <div className='main-container'>
+            <div className='welcome-container'>Добро пожаловать, Гость!</div>
+            <div className='nav-btn'>
+                <button className='btn-selection'>Студенческая Жизнь</button>
+                <button className='btn-selection'>Личный кабинет</button>
+                <button className='btn-selection'>салфетка 3</button>
+                <button className='btn-selection'>салфетка 4</button>
+                <button className='btn-selection'>салфетка 5</button>
+            </div>
+            <div className='heading-container'>
+                <div className='container-content'>
+                    <div className='novost-items'>
+                    {loading ? (
+                    <p>Загрузка новостей...</p>
+                    ) : error ? (
+                    <p>{error}</p>
+                    ) : (
+                    news.map((item) => ( 
+                        <div className='novost-item' key={item.id}>
+                        <img
+                            src={getFirstImageUrl(item.images)} // Используем функцию для получения первого изображения
+                            alt={item.title}
+                        />
+                        <div className="novost-item-content">
+                            <h3>{item.title}</h3>
+                            <p>{item.content}</p>
+                        </div>
+                        </div>
+                    ))
+                    )}
+                </div>
+                </div>
+            </div>
         </div>
 
         <footer className="footer">

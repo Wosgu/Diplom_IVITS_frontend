@@ -5,7 +5,9 @@
     color: #333;
 }
   
-.about-content h2 {
+.about-content h1 {
+    display: flex;
+    justify-content: center;
     color: #007bff;
     margin-bottom: 15px;
 }

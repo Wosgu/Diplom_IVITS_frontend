@@ -87,7 +87,7 @@ export const Login = () => {
 
     try {
       const response = await axios.post(
-        'http://26.43.50.46:8000/api/register/', 
+        'https://tamik327.pythonanywhere.com/api/register/', 
         formData,
         {
           headers: {
@@ -112,7 +112,7 @@ export const Login = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post('http://26.43.50.46:8000/api/authorization/', {
+      const response = await axios.post('https://tamik327.pythonanywhere.com/api/authorization/', {
         email: formData.email,
         password: formData.password
       });

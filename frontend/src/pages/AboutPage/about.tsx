@@ -5,6 +5,42 @@ import './about.css';
 export const About = () => {
   const navigate = useNavigate();
 
+  // Интерфейс для описания структуры контакта
+interface ContactInfo {
+  description: string;
+  numbers: string[];
+}
+const contacts: ContactInfo[] = [
+  {
+    description: 'ректорат',
+    numbers: ['+7 (4942) 63-49-00 (доб. 1010)']
+  },
+  {
+    description: 'отдел кадров по работе с обучающимися', 
+    numbers: ['(доб. 643)']
+  },
+  {
+    description: 'приемная комиссия',
+    numbers: ['(доб. 644)']
+  },
+  {
+    description: 'канцелярия',
+    numbers: ['(доб. 1400)']
+  },
+  {
+    description: 'бухгалтерия (по оплате за обучение)',
+    numbers: ['(доб. 2112)', '(доб. 2113)']
+  },
+  {
+    description: 'бухгалтерия (по заработной плате)',
+    numbers: ['(доб. 2123)']
+  },
+  {
+    description: 'отдел кадров',
+    numbers: ['(доб. 1110)']
+  }
+];
+
   return (
     <>
       <header className="header">
@@ -26,24 +62,31 @@ export const About = () => {
       </header>
 
       <div className="about-content">
-        <h2>О нашем институте</h2>
-        <p>Высшая ИТ-Школа — это современный образовательный центр, готовящий специалистов в сфере информационных технологий.</p>
-
-        <h3>Наши направления:</h3>
-        <ul>
-          <li>Разработка программного обеспечения</li>
-          <li>Кибербезопасность</li>
-          <li>Сетевые технологии</li>
-          <li>Искусственный интеллект</li>
-        </ul>
-
-        <h3>Почему выбирают нас?</h3>
-        <p>Наши преподаватели — эксперты в своих областях, а студенты получают не только теоретические знания, но и практические навыки.</p>
+        <h1>Контактная информация</h1>
+        <p>
+          Полное наименование образовательной организации
+        </p>
+        <p>
+        Федеральное государственное бюджетное образовательное учреждение высшего образования Костромской государственный университет (КГУ)
+        </p>
+        <p>Сокращенное (при наличии) наименование образовательной организации</p>
+        <p>ФГБОУ ВО Костромской государственный университет (КГУ)</p>
+        <p>Дата создания образовательной организации: 26.07.1932</p>
+        <p>Адрес: 156005, Костромская область, городской округ город Кострома, город Кострома, улица Дзержинского, дом 17/11</p>
+        <h2>Контактные телефоны:</h2>
+          <ul>
+            {contacts.map((contact, index) => (
+              <li key={index}>
+                {contact.numbers.join(' / ')} - {contact.description}
+              </li>
+            ))}
+          </ul>
+        <p></p>
       </div>
 
       <footer className="footer">
         <div className="footer-content">
-<div className="social-icons">
+          <div className="social-icons">
             <a href="https://vk.com" target="_blank" rel="noopener noreferrer"><FaVk size={24} /></a>
             <a href="https://t.me" target="_blank" rel="noopener noreferrer"><FaTelegram size={24} /></a>
           </div>

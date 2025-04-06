@@ -3,24 +3,42 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaVk, FaTelegram } from "react-icons/fa";
 import './abitur.css';
 
-// Интерфейс для данных
-interface NapravleniePodgotovki {
+// Новый интерфейс для данных программ
+interface Program {
+    id: number;
     code: string;
     name: string;
+    program_name: string;
+    form: string;
     description: string;
-    min_scores: string;
+    department: {
+        id: number;
+        name: string;
+    };
+    level: {
+        id: number;
+        name: string;
+        code: string;
+    };
+    features: Array<{
+        id: number;
+        title: string;
+        description: string;
+        program: number;
+    }>;
+    career_opportunities: string[];
 }
 
 export const Abitur = () => {
     const navigate = useNavigate();
     const [showTable, setShowTable] = useState(false);
-    const [data, setData] = useState<NapravleniePodgotovki[]>([]); // Указываем тип для данных
+    const [data, setData] = useState<Program[]>([]);
 
     useEffect(() => {
         if (showTable) {
-            fetch('http://26.43.50.46:8000/api/napravleniya_podgotovki/')
+            fetch('https://tamik327.pythonanywhere.com/api/programs/')
                 .then(response => response.json())
-                .then((data: NapravleniePodgotovki[]) => setData(data)) // Указываем тип для данных
+                .then((data: Program[]) => setData(data))
                 .catch(error => console.error('Ошибка при загрузке данных:', error));
         }
     }, [showTable]);
@@ -48,70 +66,78 @@ export const Abitur = () => {
             <div className="abitur-container">
                 <h2 className='priv'>Приветствуем тебя, уважаемый абитуриент!</h2>
                 <div className='video-abitur'>
-                    <iframe src="https://vk.com/video_ext.php?oid=-225482243&id=456239028&hash=79ad4cf4a97f74c3" allow="autoplay; encrypted-media" title="Video"></iframe>
+                    <iframe src="https://vk.com/video_ext.php?oid=-225482243&id=456239028&hash=79ad4cf4a97f74c3" 
+                            allow="autoplay; encrypted-media" 
+                            title="Video"></iframe>
                 </div>
+                
                 <div className='plushki-ifo'>
                     <h1 className='zag-info'>Твой старт в ИТ-индустрии, учись у лучших профессионалов России</h1>
                     <p className='small-info'>Высшая ИТ-школа – новый институт Костромского государственного университета: лучшие преподаватели страны, высокие стипендии, новый учебный корпус, возможность трудоустройства в ИТ-компании после второго курса</p>
+                    
                     <div className='plushki'>
-                        <div className='plushka'>
-                            <img src='/galochka.jpg' alt="Галочка" />
-                            <div className='info-plushka'>
-                                <h2 className='zag-plushka'>Лучшие эксперты ИТ-компании из 10 городов России</h2>
-                                <p className='desr-plushka'>Учитесь у лучших, живя в Костроме</p>
+                            <div className='plushka'>
+                                <img src='/galochka.jpg' alt="Галочка" />
+                                <div className='info-plushka'>
+                                    <h2 className='zag-plushka'>Лучшие эксперты ИТ-компании из 10 городов России</h2>
+                                    <p className='desr-plushka'>Учитесь у лучших, живя в Костроме</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className='plushka'>
-                            <img src='/mfti.png' alt="МФТИ" />
-                            <div className='info-plushka'>
-                                <h2 className='zag-plushka'>Часть дисциплин ведут преподаватели МФТИ</h2>
-                                <p className='desr-plushka'>Лидирующего технического вуза страны</p>
+                            <div className='plushka'>
+                                <img src='/mfti.png' alt="МФТИ" />
+                                <div className='info-plushka'>
+                                    <h2 className='zag-plushka'>Часть дисциплин ведут преподаватели МФТИ</h2>
+                                    <p className='desr-plushka'>Лидирующего технического вуза страны</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className='plushka'>
-                            <img src='/rabota.png' alt="Работа" />
-                            <div className='info-plushka'>
-                                <h2 className='zag-plushka'>Возможность работы в ИТ после второго курса</h2>
-                                <p className='desr-plushka'>Партнёры программы: Совкомбанк, ММТР, Yandex Cloud, ЮвелирСофт</p>
+                            <div className='plushka'>
+                                <img src='/rabota.png' alt="Работа" />
+                                <div className='info-plushka'>
+                                    <h2 className='zag-plushka'>Возможность работы в ИТ после второго курса</h2>
+                                    <p className='desr-plushka'>Партнёры программы: Совкомбанк, ММТР, Yandex Cloud, ЮвелирСофт</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className='plushka'>
-                            <img src='/format_obucheniya.png' alt="Формат обучения" />
-                            <div className='info-plushka'>
-                                <h2 className='zag-plushka'>Нескучный формат обучения</h2>
-                                <p className='desr-plushka'>Много проектов, хакатонов и индивидуальной работы с каждым студентом</p>
+                            <div className='plushka'>
+                                <img src='/format_obucheniya.png' alt="Формат обучения" />
+                                <div className='info-plushka'>
+                                    <h2 className='zag-plushka'>Нескучный формат обучения</h2>
+                                    <p className='desr-plushka'>Много проектов, хакатонов и индивидуальной работы с каждым студентом</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className='plushka'>
-                            <img src='/stipendia.png' alt="Стипендия" />
-                            <div className='info-plushka'>
-                                <h2 className='zag-plushka'>Единоразовая стипендия до 330 000₽</h2>
-                                <p className='desr-plushka'>Единоразовая стипендия положена: зачисленным на 1 курс с 240+ баллами по ЕГЭ студентам – 100 000₽; за каждый экзамен с результатом в 100 баллов ЕГЭ – по 100 000₽; приехавшим учиться в КГУ из других регионов РФ студентам – 30 000₽</p>
+                            <div className='plushka'>
+                                <img src='/stipendia.png' alt="Стипендия" />
+                                <div className='info-plushka'>
+                                    <h2 className='zag-plushka'>Единоразовая стипендия до 330 000₽</h2>
+                                    <p className='desr-plushka'>Единоразовая стипендия положена: зачисленным на 1 курс с 240+ баллами по ЕГЭ студентам – 100 000₽; за каждый экзамен с результатом в 100 баллов ЕГЭ – по 100 000₽; приехавшим учиться в КГУ из других регионов РФ студентам – 30 000₽</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
                 <button className="toggle-button" onClick={() => setShowTable(!showTable)}>
                     ↓направления подготовки↓
                 </button>
+                
                 {showTable && (
                     <div className="table-container">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Код направления</th>
-                                    <th>Название направления</th>
+                                    <th>Название программы</th>
+                                    <th>Уровень образования</th>
+                                    <th>Форма обучения</th>
                                     <th>Описание</th>
-                                    <th>Минимальные баллы по экзаменам</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((item, index) => (
-                                    <tr key={index}>
+                                {data.map((item) => (
+                                    <tr key={item.id}>
                                         <td>{item.code}</td>
-                                        <td>{item.name}</td>
+                                        <td>{item.program_name}</td>
+                                        <td>{item.level.name}</td>
+                                        <td>{item.form}</td>
                                         <td>{item.description}</td>
-                                        <td>{item.min_scores}</td>
                                     </tr>
                                 ))}
                             </tbody>

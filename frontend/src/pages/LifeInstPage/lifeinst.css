@@ -219,7 +219,6 @@ h2 {
 .show-comments-btn:hover {
     text-decoration: underline;
 }
-
 /* Стили для кастомного слайдера */
 .custom-slider {
     position: relative;
@@ -230,8 +229,7 @@ h2 {
   /* Стили для обычного изображения (без слайдера) */
   .single-image {
     width: 100%;
-    height: auto;
-    max-height: 300px;
+    height: 700px;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 15px;
@@ -240,14 +238,14 @@ h2 {
   /* Стили для слайдера */
   .slider-images {
     position: relative;
-    height: 300px;
+    height: 700px;
   }
   
   .slider-images .news-image {
     position: absolute;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: 700px;
+    object-fit:cover;
     border-radius: 8px;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;

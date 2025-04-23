@@ -1,8 +1,7 @@
 // import { Swiper, SwiperSlide } from 'swiper/react';
 // import { Navigation} from 'swiper/modules';
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from 'react-router-dom';
-import { FaVk, FaTelegram, FaRegThumbsUp, FaRegComment, FaRegShareSquare } from "react-icons/fa";
+import { FaRegThumbsUp, FaRegComment, FaRegShareSquare } from "react-icons/fa";
 import axios from 'axios';
 import './lifeinst.css';
 
@@ -45,7 +44,6 @@ interface Comment {
 }
 
 export const Lifeinst = () => {
-  const navigate = useNavigate();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
@@ -255,24 +253,6 @@ export const Lifeinst = () => {
 
   return (
     <>
-      <header className="header">
-        <div className="logo">
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <h1>Высшая ИТ-Школа</h1>
-          </Link>
-        </div>
-        <nav className="nav">
-          <ul>
-            <li><Link to="/about">Сведения об организации</Link></li>
-            <li><Link to="/abitur">Абитуриенту</Link></li>
-            <li><Link to="/stud">Студенту</Link></li>
-            <li><Link to="/lifeinst">Жизнь института</Link></li>
-            <li><Link to="/museum">Музей</Link></li>
-          </ul>
-        </nav>
-        <button className="login-btn" onClick={() => navigate('/login')}>Войти</button>
-      </header>
-
       <div className="life-ivits-container">
         <h2>Жизнь института</h2>
         <div className='novost-ivits'>
@@ -393,23 +373,6 @@ export const Lifeinst = () => {
           </div>
         </div>
       </div>
-
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="social-icons">
-            <a href="https://vk.com" target="_blank" rel="noopener noreferrer"><FaVk size={24} /></a>
-            <a href="https://t.me" target="_blank" rel="noopener noreferrer"><FaTelegram size={24} /></a>
-          </div>
-          <div className="address">
-            <p>Адрес: г. Кострома, ул. Ивановская, д. 24а</p>
-            <p>Политика конфиденциальности</p>
-          </div>
-          <div className="contact-info">
-            <p>156005, Костромская область, городской округ город Кострома, город Кострома, улица Дзержинского, дом 17/11</p>
-            <p>Тел. +7 (4942) 63-49-00 (доб. 1010) (ректорат), +7 (4942) 63-49-00 (доб. 644) (приемная комиссия)</p>
-          </div>
-        </div>
-      </footer>
     </>
   );
 };

@@ -1,5 +1,3 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { FaVk, FaTelegram } from "react-icons/fa";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './museum.css';
@@ -25,7 +23,6 @@ interface Exhibit {
 }
 
 export const Museum = () => {
-    const navigate = useNavigate();
     const [exhibits, setExhibits] = useState<Exhibit[]>([]);
     const [selectedExhibit, setSelectedExhibit] = useState<Exhibit | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -48,24 +45,6 @@ export const Museum = () => {
 
     return (
         <>
-            <header className="header">
-                <div className="logo">
-                    <Link to="/" style={{ textDecoration: 'none' }}>
-                        <h1>Высшая ИТ-Школа</h1>
-                    </Link>
-                </div>
-                <nav className="nav">
-                    <ul>
-                        <li><Link to="/about">Сведения об организации</Link></li>
-                        <li><Link to="/abitur">Абитуриенту</Link></li>
-                        <li><Link to="/stud">Студенту</Link></li>
-                        <li><Link to="/lifeinst">Жизнь института</Link></li>
-                        <li><Link to="/museum">Музей</Link></li>
-                    </ul>
-                </nav>
-                <button className="login-btn" onClick={() => navigate('/login')}>Войти</button>
-            </header>
-
             <h1 className='museum-h1'>Музей</h1>
             
             <div className='museum-expo'>
@@ -126,23 +105,6 @@ export const Museum = () => {
                     )}
                 </div>
             </div>
-
-            <footer className="footer">
-                <div className="footer-content">
-                    <div className="social-icons">
-                        <a href="https://vk.com" target="_blank" rel="noopener noreferrer"><FaVk size={24} /></a>
-                        <a href="https://t.me" target="_blank" rel="noopener noreferrer"><FaTelegram size={24} /></a>
-                    </div>
-                    <div className="address">
-                        <p>Адрес: г. Кострома, ул. Ивановская, д. 24а</p>
-                        <p>Политика конфиденциальности</p>
-                    </div>
-                    <div className="contact-info">
-                        <p>156005, Костромская область, городской округ город Кострома, город Кострома, улица Дзержинского, дом 17/11</p>
-                        <p>Тел. +7 (4942) 63-49-00 (доб. 1010) (ректорат), +7 (4942) 63-49-00 (доб. 644) (приемная комиссия)</p>
-                    </div>
-                </div>
-            </footer>
         </>
     );
 };

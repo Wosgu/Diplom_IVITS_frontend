@@ -1,16 +1,270 @@
-.welcome-container{
-    display: flex;
-    margin: 70px;
-    font-size: 24px;
-    justify-content: center;
+:root {
+  --primary: #2c3e50;
+  --secondary: #3498db;
+  --danger: #e74c3c;
+  --light: #f8f9fa;
+  --dark: #212529;
 }
-.nav-btn{
-    display: flex;
-    flex-direction: row;
-    margin: 50px;
+
+.stud-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
-.btn-selection{
-    width: 100%;
-    height: 50px;
-    margin: 10px;
+
+.stud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.stud-meta {
+  display: flex;
+  gap: 15px;
+  color: #666;
+  margin-top: 10px;
+  font-size: 0.9em;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: #c0392b;
+}
+
+.profile-section {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.profile-header{
+  display: flex;
+}
+
+.profile-avatar{
+  display: flex;
+  width: 56px;
+  height: 56px;
+  margin-right: 10px;
+}
+
+.profile-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.profile-info div {
+  padding: 15px;
+  background: var(--light);
+  border-radius: 8px;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.course-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.course-lock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #666;
+  border-radius: 10px;
+}
+
+.loader {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2em;
+  color: var(--dark);
+}
+
+.error-container {
+  background: #ffe3e3;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 600px;
+  margin: 50px auto;
+  color: #dc3545;
+}
+
+@media (max-width: 768px) {
+  .stud-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .profile-info {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Стили спиннера */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Основные стили */
+.stud-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.stud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #eee;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e0e0e0;
+}
+
+.stud-meta {
+  display: flex;
+  gap: 1rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.logout-btn, .login-btn {
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+}
+
+.login-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+}
+
+.logout-btn:hover, .login-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+  color: #dc3545;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.course-card {
+  padding: 1.5rem;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.course-card.locked {
+  opacity: 0.6;
+}
+
+.course-lock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.profile-info {
+  display: grid;
 }

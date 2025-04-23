@@ -26,6 +26,11 @@
     margin-left: 20px;
 }
 
+.image-expo{
+    width: 500px;
+    height: 500px;
+}
+
 .search-bar-input {
     margin-left: 25px;
     margin-bottom: 20px;

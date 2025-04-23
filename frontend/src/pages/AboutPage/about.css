@@ -1,24 +1,430 @@
-.about-content {
-    padding: 40px;
-    max-width: 800px;
+/* about.css */
+.about-container {
+    max-width: 1280px;
     margin: 0 auto;
-    color: #333;
-}
+    padding: 2rem 1.5rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.6;
+    color: #1a202c;
+  }
   
-.about-content h1 {
+  .university-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  
+  .university-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+    color: #2d3748;
+    font-weight: 700;
+  }
+  
+  .header-meta {
     display: flex;
     justify-content: center;
-    color: #007bff;
-    margin-bottom: 15px;
-}
+    gap: 4rem;
+    margin-top: 1.5rem;
+  }
   
-.about-content h3 {
-    color: #0056b3;
-    margin-top: 20px;
-}
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   
-.about-content p {
-    font-size: 16px;
-    line-height: 1.6;
-}
+  .meta-label {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 0.4rem;
+  }
   
+  .meta-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #4a5568;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    margin: 3rem 0 2rem;
+    position: relative;
+    padding-bottom: 0.8rem;
+    color: #2d3748;
+  }
+  
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #4299e1;
+  }
+  
+  /* Контакты */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .contact-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s;
+  }
+  
+  .contact-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .phone-numbers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-top: 1rem;
+  }
+  
+  .phone-link {
+    color: #4299e1;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .phone-link:hover {
+    color: #3182ce;
+  }
+  
+  /* История */
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+    margin: 2rem 0;
+  }
+  
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #e2e8f0;
+    border-radius: 2px;
+  }
+  
+  .timeline-event {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+  }
+  
+  .event-date {
+    position: absolute;
+    left: -85px;
+    top: 0;
+    background: #4299e1;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .event-content {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  /* Персоналии */
+  .personnel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+  
+  .person-card {
+    display: flex;
+    gap: 1.5rem;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .person-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+  
+  .person-info {
+    flex: 1;
+  }
+  
+  .position {
+    color: #718096;
+    font-size: 0.95rem;
+    margin: 0.5rem 0;
+  }
+  
+  .bio {
+    color: #4a5568;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  
+  .person-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #4299e1;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  /* Аккордеон */
+  .accordion-item {
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+  
+  .accordion-header {
+    padding: 1.2rem;
+    background: #f8fafc;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+  }
+  
+  .accordion-content {
+    padding: 1rem;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+  }
+  
+  .history-timeline {
+    list-style: none;
+    padding-left: 1.5rem;
+  }
+  
+  .history-timeline li {
+    position: relative;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  
+  .history-timeline li::before {
+    content: '▹';
+    position: absolute;
+    left: 0;
+    color: #4299e1;
+  }
+  
+  /* Партнеры */
+  .partners-block {
+    margin-top: 4rem;
+    text-align: center;
+    padding: 2rem;
+    background: #f8fafc;
+    border-radius: 12px;
+  }
+  
+  .partner-logo img {
+    height: 50px;
+    margin-top: 1rem;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .university-header h1 {
+      font-size: 2rem;
+    }
+  
+    .header-meta {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  
+    .timeline-event {
+      padding-left: 1rem;
+    }
+  
+    .event-date {
+      position: static;
+      margin-bottom: 1rem;
+    }
+  
+    .person-card {
+      flex-direction: column;
+    }
+  
+    .person-photo {
+      width: 100%;
+      height: 200px;
+      border-radius: 12px 12px 0 0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .about-container {
+      padding: 1rem;
+    }
+  
+    .section-title {
+      font-size: 1.75rem;
+    }
+  
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+/* about.css (дополнения) */
+.partner-info {
+    background: #f0f9ff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    border-left: 4px solid #4299e1;
+  }
+  
+  .partner-description {
+    color: #4a5568;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .history-timeline li strong {
+    font-weight: 600;
+    color: #2d3748;
+  }
+  
+  .structure-list {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+  }
+  
+  .structure-list li {
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+  }
+  
+  .institute-structure h3 {
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem;
+    color: #2d3748;
+  }
+
+  /* about.css дополнения */
+.institute-structure {
+  margin-top: 4rem;
+}
+
+.structure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.structure-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #e2e8f0;
+}
+
+.structure-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.structure-icon {
+  font-size: 2rem;
+  min-width: 60px;
+  text-align: center;
+}
+
+.structure-content h4 {
+  margin: 0 0 0.5rem;
+  color: #2d3748;
+  font-size: 1.1rem;
+}
+
+.structure-content p {
+  margin: 0;
+  color: #718096;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.partner-block {
+  margin-top: 3rem;
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 2rem;
+  border-left: 4px solid #4299e1;
+}
+
+.partner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.partner-content h3 {
+  margin: 0 0 1.5rem;
+  color: #2d3748;
+}
+
+.partner-info {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.partner-info img {
+  height: 50px;
+}
+
+.partner-info p {
+  max-width: 600px;
+  color: #4a5568;
+  margin: 0;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .structure-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .partner-info {
+    flex-direction: column;
+    text-align: center;
+  }
+}

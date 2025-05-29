@@ -1,6 +1,7 @@
 .abitur-container {
     display: flex;
     flex-direction: column;
+    margin-bottom: 30px;
 }
 .priv{
     display: flex;
@@ -274,3 +275,136 @@
       font-size: 0.95rem;
     }
   }
+
+
+/* Дополнения для адаптации под 412px */
+@media (max-width: 412px) {
+  .abitur-container {
+    margin-bottom: 15px;
+  }
+
+  .priv {
+    margin: 30px 15px;
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .video-abitur {
+    height: 250px;
+    margin: 0 10px;
+    width: calc(100% - 20px);
+    border: none;
+  }
+
+  .admission-hero {
+    padding: 2rem 1rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    line-height: 1.3;
+    margin-bottom: 2rem;
+  }
+
+  .benefits-grid {
+    gap: 1rem;
+    grid-auto-rows: minmax(250px, auto);
+  }
+
+  .benefit-card {
+    padding: 1.5rem;
+    border-radius: 15px;
+  }
+
+  .benefit-card:hover {
+    transform: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  .money-pulse h2 {
+    font-size: 1.8rem;
+  }
+
+  .floating-icon {
+    width: 60px;
+    height: auto;
+  }
+
+  .professor-card .mfti-logo {
+    width: 80px;
+  }
+
+  .companies-logos img {
+    max-width: 80px;
+    height: auto;
+  }
+
+  .hackathon-bg ul {
+    padding-left: 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .map-card .map-image {
+    max-width: 180px;
+  }
+
+  .toggle-button {
+    width: calc(100% - 30px);
+    margin: 0 15px;
+    padding: 12px 18px;
+    font-size: 1rem;
+    justify-content: space-between;
+  }
+
+  table {
+    min-width: 100%;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 12px 8px !important;
+  }
+
+  td:last-child {
+    display: none;
+  }
+
+  /* Скрываем некоторые элементы на мобилках */
+  .glow-effect,
+  .sparkles,
+  .connection-lines {
+    display: none;
+  }
+
+  .animated-icons .icon {
+    font-size: 1.5rem;
+  }
+
+  .science-icons {
+    font-size: 1.2rem;
+  }
+
+  .tilted {
+    transform: none !important;
+    margin-top: 0;
+  }
+}
+
+/* Дополнительные правки для очень маленьких экранов */
+@media (max-width: 360px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .benefit-card {
+    padding: 1rem;
+  }
+
+  .money-pulse h2 {
+    font-size: 1.5rem;
+  }
+
+  .toggle-button {
+    font-size: 0.9rem;
+  }
+}

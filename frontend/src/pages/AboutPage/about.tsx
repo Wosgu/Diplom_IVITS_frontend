@@ -29,7 +29,7 @@ export const About = () => {
       name: 'Борисов Александр Сергеевич',
       position: 'Директор Института ВИТШ (с 14.03.2024)',
       bio: 'Экс-руководитель казанского IT-парка. Возглавил институт после масштабной реорганизации.',
-      img: '/BorisovAS.gif',
+      img: '/borisov_a_s.jpg',
       link: 'https://m.business-gazeta.ru/news/626388'
     },
     {

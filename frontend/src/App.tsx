@@ -7,6 +7,7 @@ import { Stud } from './pages/StudPage/stud';
 import { Museum } from './pages/MuseumPage/museum';
 import { Lifeinst } from './pages/LifeInstPage/lifeinst';
 import { Layout } from './layout/index';
+import { PersonalAccount } from './pages/PersonalAccount/PersonalAccount';
 
 
 export const App = () => {
@@ -21,6 +22,7 @@ export const App = () => {
           <Route path='/stud' element={<Stud/>}/>
           <Route path='/lifeinst' element={<Lifeinst/>}/>
           <Route path='/museum' element={<Museum/>}/>
+          <Route path='/personalaccount' element={<PersonalAccount/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

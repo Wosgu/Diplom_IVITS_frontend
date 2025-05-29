@@ -1,0 +1,39 @@
+/* Стили для кнопки загрузки */
+.banner-upload {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.banner-upload-button {
+  background: #2196F3;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.banner-upload-button:hover {
+  background: #1976D2;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
+}
+
+.upload-error {
+  color: #ff4444;
+  font-size: 12px;
+  position: absolute;
+  bottom: -25px;
+  white-space: nowrap;
+}
+
+.fade-slider__controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}

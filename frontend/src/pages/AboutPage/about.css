@@ -428,3 +428,154 @@
     text-align: center;
   }
 }
+
+/* Дополнения для 412px и меньше */
+@media (max-width: 412px) {
+  .about-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .university-header h1 {
+    font-size: 1.6rem;
+    line-height: 1.3;
+    padding: 0 0.5rem;
+  }
+
+  .header-meta {
+    gap: 1rem;
+  }
+
+  .meta-value {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin: 2rem 0 1.5rem;
+  }
+
+  .contact-grid {
+    gap: 1rem;
+  }
+
+  .contact-card {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .contact-card h3 {
+    font-size: 1rem;
+  }
+
+  .phone-link {
+    font-size: 0.9rem;
+  }
+
+  /* Timeline */
+  .timeline {
+    padding-left: 15px;
+  }
+
+  .timeline-event {
+    margin-bottom: 1.5rem;
+    padding-left: 0;
+  }
+
+  .event-content {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .event-content h3 {
+    font-size: 1.1rem;
+  }
+
+  /* Structure */
+  .structure-card {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .structure-icon {
+    font-size: 1.8rem;
+    min-width: 50px;
+  }
+
+  .structure-content h4 {
+    font-size: 1rem;
+  }
+
+  .structure-content p {
+    font-size: 0.85rem;
+  }
+
+  /* Personnel */
+  .personnel-grid {
+    gap: 1.5rem;
+  }
+
+  .person-card {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .person-photo {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+  }
+
+  .person-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .position {
+    font-size: 0.9rem;
+  }
+
+  .bio {
+    font-size: 0.9rem;
+  }
+
+  /* Partners */
+  .partners-block {
+    padding: 1.5rem 1rem;
+    margin-top: 3rem;
+  }
+
+  .partner-logo img {
+    height: 35px;
+  }
+
+  .partner-description {
+    font-size: 0.9rem;
+  }
+
+  /* Accordion */
+  .accordion-header {
+    padding: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .history-timeline li {
+    font-size: 0.9rem;
+    padding-left: 1.2rem;
+  }
+}
+
+/* Модифицируем существующий 480px запрос */
+@media (max-width: 480px) {
+  .timeline::before {
+    left: 8px;
+  }
+
+  .event-date {
+    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+  }
+
+  .structure-list li {
+    font-size: 0.9rem;
+  }
+}

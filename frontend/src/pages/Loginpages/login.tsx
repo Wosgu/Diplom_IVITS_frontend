@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import './login.css';
 import { Eye, EyeOff } from 'lucide-react';
-import { validateRegister } from '../../validations/loginvalid';
+import { validateRegister, validateLogin } from '../../validations/loginvalid';
+import './login.css';
 
 interface PasswordInputProps {
   placeholder: string;
@@ -12,7 +12,7 @@ interface PasswordInputProps {
   name: string;
 }
 
-export const PasswordInput: React.FC<PasswordInputProps> = ({ placeholder, value, onChange, name }) => {
+const PasswordInput: React.FC<PasswordInputProps> = ({ placeholder, value, onChange, name }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -20,199 +20,359 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({ placeholder, value
       <input 
         type={showPassword ? "text" : "password"} 
         placeholder={placeholder} 
-        required 
         value={value} 
         onChange={onChange}
         name={name}
       />
       <button 
         type="button" 
-        className="eye-button" 
+        className="eye-button"
         onClick={() => setShowPassword(!showPassword)}
       >
-        {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+        {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
       </button>
     </div>
   );
 };
 
 export const Login = () => {
+  const [searchParams] = useSearchParams();
   const [isRegister, setIsRegister] = useState(false);
+  const [isAgreementChecked, setIsAgreementChecked] = useState(false);
+  const [showAgreement, setShowAgreement] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmationCode, setConfirmationCode] = useState('');
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
-    first_name: '',
-    last_name: '',
-    middle_name: '',
+    phone: '',
+    firstName: '',
+    lastName: '',
+    middleName: '',
     password: '',
-    password2: ''
+    confirmPassword: '',
   });
-  const [errors, setErrors] = useState<{
-    nickname?: string;
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    middleName?: string;
-    password?: string;
-    confirmPassword?: string;
-  }>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [successMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const navigate = useNavigate(); // Вызов useNavigate на верхнем уровне
+  // Обработка callback от VK
+  useEffect(() => {
+    const code = searchParams.get('code');
+    if (code) {
+      handleVKCallback(code);
+    }
+  }, [searchParams]);
+
+  const handleVKCallback = async (code: string) => {
+    setIsLoading(true);
+    try {
+      const { data } = await axios.get(`https://tamik327.pythonanywhere.com/auth/vk/callback/?code=${code}`);
+      
+      if (data.status === 'success' && data.access_token && data.refresh_token) {
+        // Сохраняем токены и редиректим на главную
+        localStorage.setItem('accessToken', data.access_token);
+        localStorage.setItem('refreshToken', data.refresh_token);
+        navigate('/');
+      } else {
+        setErrors({ general: 'Не удалось авторизоваться через VK' });
+      }
+    } catch (error) {
+      setErrors({ general: 'Ошибка авторизации через VK' });
+      console.error('VK auth error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVKLogin = () => {
+    window.location.href = 'https://tamik327.pythonanywhere.com/auth/vk/init/';
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    const formattedValue = value.startsWith('7') ? `+7${value.slice(1)}` : `+7${value}`;
+    setFormData(prev => ({ ...prev, phone: formattedValue.slice(0, 12) }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Валидация данных
-    const validationErrors = validateRegister(
-      formData.username,
-      formData.email,
-      formData.first_name,
-      formData.last_name,
-      formData.middle_name,
-      formData.password,
-      formData.password2
-    );
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setErrors({});
-
+  const handleConfirmCode = async () => {
     try {
-      const response = await axios.post(
-        'https://tamik327.pythonanywhere.com/api/register/', 
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log('Регистрация успешна:', response.data);
-      alert('Вы успешно зарегистрированы!');
-    } catch (error: any) {
-      console.error('Ошибка при регистрации:', error);
-      if (error.response) {
-        console.error('Данные ответа:', error.response.data);
-        alert(`Ошибка: ${JSON.stringify(error.response.data)}`);
-      } else {
-        alert(error.message);
-      }
-    }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    try {
-      const response = await axios.post('https://tamik327.pythonanywhere.com/api/authorization/', {
-        email: formData.email,
-        password: formData.password
+      await axios.post('https://tamik327.pythonanywhere.com/api/register/confirm/', {
+        phone: formData.phone,
+        code: confirmationCode
       });
-  
-      // Сохраняем токен в localStorage
-      const { access, refresh } = response.data; // Предположим, что сервер возвращает access и refresh токены
-      localStorage.setItem('accessToken', access);
-      localStorage.setItem('refreshToken', refresh);
-  
-      console.log('Вход выполнен:', response.data);
-      alert('Вы успешно вошли в систему!');
-  
-      // Перенаправляем пользователя на главную страницу
-      navigate('/'); // Используем navigate для перенаправления
-    } catch (error: any) {
-      console.error('Ошибка при входе:', error);
-  
-      if (error.response) {
-        // Ошибка от сервера (например, 4xx или 5xx)
-        const { status, data } = error.response;
-  
-        switch (status) {
-          case 400:
-            alert('Некорректные данные. Проверьте введенные данные и попробуйте снова.');
-            break;
-          case 401:
-            alert('Неверный email или пароль. Проверьте введенные данные и попробуйте снова.');
-            break;
-          case 404:
-            alert('Сервер не найден. Пожалуйста, попробуйте позже.');
-            break;
-          case 500:
-            alert('Ошибка на сервере. Пожалуйста, попробуйте позже.');
-            break;
-          default:
-            // Вывод деталей ошибки, если они есть
-            if (data.detail) {
-              alert(`Ошибка: ${data.detail}`);
-            } else if (data.message) {
-              alert(`Ошибка: ${data.message}`);
-            } else {
-              alert(`Ошибка: ${JSON.stringify(data)}`);
-            }
+
+      // После подтверждения сразу логиним пользователя
+      try {
+        const { data } = await axios.post(
+          'https://tamik327.pythonanywhere.com/api/login/phone/',
+          {
+            phone: formData.phone.replace('+', ''),
+            password: formData.password
+          }
+        );
+
+        if (data.access && data.refresh) {
+          localStorage.setItem('accessToken', data.access);
+          localStorage.setItem('refreshToken', data.refresh);
+          navigate('/');
         }
-      } else if (error.request) {
-        // Ошибка, если сервер не ответил
-        alert('Сервер не ответил. Проверьте подключение к интернету и попробуйте снова.');
-      } else {
-        // Другие ошибки (например, ошибка в коде)
-        alert(`Ошибка: ${error.message}`);
+      } catch (loginError) {
+        setErrors({ general: 'Авторизация после регистрации не удалась' });
+      }
+
+    } catch (error) {
+      setErrors({ confirmation: 'Неверный код подтверждения' });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+    
+    if (isRegister) {
+      const validationErrors = validateRegister(
+        formData.username,
+        formData.phone,
+        formData.firstName,
+        formData.lastName,
+        formData.middleName,
+        formData.password,
+        formData.confirmPassword,
+        isAgreementChecked
+      );
+
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      try {
+        await axios.post('https://tamik327.pythonanywhere.com/api/register/init/', {
+          username: formData.username,
+          phone: formData.phone,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          password: formData.password,
+          password2: formData.confirmPassword
+        });
+        setShowConfirmation(true);
+      } catch (error: any) {
+        if (error.response?.data?.phone) {
+          setErrors({ phone: error.response.data.phone[0] });
+        }
+      }
+    } else {
+      const validationErrors = validateLogin(formData.phone, formData.password);
+      
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      try {
+        const { data } = await axios.post(
+          'https://tamik327.pythonanywhere.com/api/login/phone/',
+          {
+            phone: formData.phone.replace('+', ''),
+            password: formData.password
+          }
+        );
+
+        if (data.access && data.refresh) {
+          localStorage.setItem('accessToken', data.access);
+          localStorage.setItem('refreshToken', data.refresh);
+          navigate('/');
+        } else {
+          setErrors({ general: 'Не удалось получить токены авторизации' });
+        }
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          setErrors({ general: 'Неверный телефон или пароль' });
+        } else {
+          setErrors({ general: 'Ошибка сервера. Попробуйте позже.' });
+        }
       }
     }
   };
 
   return (
     <div className="auth-container">
-      <div className="toggle-buttons">
-        <button 
-          className={!isRegister ? "active" : ""} 
-          onClick={() => setIsRegister(false)}
-        >
-          Вход
-        </button>
-        <button 
-          className={isRegister ? "active" : ""} 
-          onClick={() => setIsRegister(true)}
-        >
-          Регистрация
-        </button>
+      <div className="auth-illustration">
+        <div className="illustration-placeholder"></div>
       </div>
 
-      {isRegister ? (
-        <form className="auth-form" onSubmit={handleRegister}>
-          <h2>Регистрация</h2>
-          <input type="text" name="username" placeholder="Никнейм" required value={formData.username} onChange={handleChange} />
-          {errors.nickname && <div className="error-message">{errors.nickname}</div>}
-          <input type="text" name="email" placeholder="Почта" required value={formData.email} onChange={handleChange} />
-          {errors.email && <div className="error-message">{errors.email}</div>}
-          <input type="text" name="first_name" placeholder="Имя" required value={formData.first_name} onChange={handleChange} />
-          {errors.firstName && <div className="error-message">{errors.firstName}</div>}
-          <input type="text" name="last_name" placeholder="Фамилия" required value={formData.last_name} onChange={handleChange} />
-          {errors.lastName && <div className="error-message">{errors.lastName}</div>}
-          <input type="text" name="middle_name" placeholder="Отчество" required value={formData.middle_name} onChange={handleChange} />
-          {errors.middleName && <div className="error-message">{errors.middleName}</div>}
-          <PasswordInput name="password" placeholder="Пароль" value={formData.password} onChange={handleChange} />
-          {errors.password && <div className="error-message">{errors.password}</div>}
-          <PasswordInput name="password2" placeholder="Повторите пароль" value={formData.password2} onChange={handleChange} />
-          {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
-          <button type="submit">Зарегистрироваться</button>
+      <div className="auth-content">
+        <form onSubmit={handleSubmit} className="auth-form">
+          <h2>{showConfirmation ? 'Подтверждение' : isRegister ? 'Создать аккаунт' : 'Добро пожаловать'}</h2>
+
+          {successMessage && <div className="success-message">{successMessage}</div>}
+          {isLoading && <div className="loading-overlay">Загрузка...</div>}
+
+          {showConfirmation ? (
+            <div className="confirmation-section">
+              <p>Пожалуйста, введите код, отправленный на <strong>{formData.phone}</strong></p>
+              <input
+                type="text"
+                value={confirmationCode}
+                onChange={(e) => setConfirmationCode(e.target.value)}
+                placeholder="6-значный код"
+                maxLength={6}
+                className={errors.confirmation ? 'error' : ''}
+              />
+              {errors.confirmation && <span className="error-message">{errors.confirmation}</span>}
+              <button 
+                type="button" 
+                className="submit-button"
+                onClick={handleConfirmCode}
+              >
+                Подтвердить
+              </button>
+            </div>
+          ) : (
+            <>
+              {isRegister && (
+                <>
+                  <input
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Никнейм"
+                    className={errors.username ? 'error' : ''}
+                  />
+                  {errors.username && <span className="error-message">{errors.username}</span>}
+                </>
+              )}
+
+              <input
+                name="phone"
+                value={formData.phone}
+                onChange={handlePhoneChange}
+                placeholder="+7XXXXXXXXXX"
+                className={errors.phone ? 'error' : ''}
+              />
+              {errors.phone && <span className="error-message">{errors.phone}</span>}
+
+              {isRegister && (
+                <>
+                  <div className="name-group">
+                    <input
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="Имя"
+                      className={errors.firstName ? 'error' : ''}
+                    />
+                    <input
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder="Фамилия"
+                      className={errors.lastName ? 'error' : ''}
+                    />
+                  </div>
+                  
+                  <input
+                    name="middleName"
+                    value={formData.middleName}
+                    onChange={handleChange}
+                    placeholder="Отчество"
+                    className={errors.middleName ? 'error' : ''}
+                  />
+                  {errors.middleName && <span className="error-message">{errors.middleName}</span>}
+                </>
+              )}
+
+              <PasswordInput
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Пароль"
+              />
+              {errors.password && <span className="error-message">{errors.password}</span>}
+
+              {isRegister && (
+                <>
+                  <PasswordInput
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Повторите пароль"
+                  />
+                  {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+
+                  <label className="agreement-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={isAgreementChecked}
+                      onChange={(e) => setIsAgreementChecked(e.target.checked)}
+                    />
+                    Принимаю{' '}
+                    <button
+                      type="button"
+                      className="agreement-link"
+                      onClick={() => setShowAgreement(true)}
+                    >
+                      пользовательское соглашение
+                    </button>
+                  </label>
+                  {errors.agreement && <span className="error-message">{errors.agreement}</span>}
+                </>
+              )}
+
+              {errors.general && <div className="error-message general-error">{errors.general}</div>}
+
+              <button type="submit" className="submit-button">
+                {isRegister ? 'Зарегистрироваться' : 'Войти'}
+              </button>
+
+              <button 
+                type="button" 
+                className="vk-login-button"
+                onClick={handleVKLogin}
+              >
+                <svg className="vk-icon" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                  <path d="M12.65 18.24c-5.59 0-8.65-3.82-8.85-10.23h3.07c.15 4.88 2.44 6.97 4.46 7.37V8.01h2.91v4.23c2-.2 4.1-2.09 4.8-4.23h2.91c-.62 3.52-3.29 6.11-5.9 7.03 2.61.76 5.34 3.03 6.29 7.2h-3.36c-.72-2.62-2.86-4.38-5.33-4.6v4.6h-.4z"/>
+                </svg>
+                {isRegister ? 'Зарегистрироваться через VK' : 'Войти с VK ID'}
+              </button>
+
+              <div className="auth-switch">
+                {isRegister ? 'Уже есть аккаунт? ' : 'Нет аккаунта? '}
+                <button
+                  type="button"
+                  className="switch-button"
+                  onClick={() => setIsRegister(!isRegister)}
+                >
+                  {isRegister ? 'Войти' : 'Зарегистрироваться'}
+                </button>
+              </div>
+            </>
+          )}
         </form>
-      ) : (
-        <form className="auth-form" onSubmit={handleLogin}>
-          <h2>Вход</h2>
-          <input type="text" name="email" placeholder="E-mail" required value={formData.email} onChange={handleChange} />
-          {errors.email && <div className="error-message">{errors.email}</div>}
-          <PasswordInput name="password" placeholder="Пароль" value={formData.password} onChange={handleChange} />
-          {errors.password && <div className="error-message">{errors.password}</div>}
-          <button type="submit">Войти</button>
-        </form>
-      )}
+
+        {showAgreement && (
+          <div className="agreement-modal">
+            <div className="modal-content">
+              <h3>Пользовательское соглашение</h3>
+              <div className="modal-text">
+                {/* Текст соглашения */}
+              </div>
+              <button
+                className="modal-close"
+                onClick={() => setShowAgreement(false)}
+              >
+                Закрыть
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

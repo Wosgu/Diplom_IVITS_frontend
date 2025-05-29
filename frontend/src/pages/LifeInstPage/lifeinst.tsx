@@ -1,8 +1,7 @@
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import { Navigation} from 'swiper/modules';
 import { useState, useEffect } from "react";
-import { FaRegThumbsUp, FaRegComment, FaRegShareSquare } from "react-icons/fa";
+import { FaRegThumbsUp, FaRegComment } from "react-icons/fa";
 import axios from 'axios';
+import { Addnews } from "./addnews";
 import './lifeinst.css';
 
 interface NewsItem {
@@ -37,6 +36,7 @@ interface Comment {
   id: number;
   text: string;
   created_at: string;
+  news: number;
   author: {
     username: string;
     avatar?: string;
@@ -52,31 +52,61 @@ export const Lifeinst = () => {
   const [expandedNews, setExpandedNews] = useState<{ [key: number]: boolean }>({});
   const [showAllComments, setShowAllComments] = useState<{ [key: number]: boolean }>({});
   const [comments, setComments] = useState<{ [newsId: number]: Comment[] }>({});
-  const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: number]: number }>({});
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [newsResponse, categoriesResponse] = await Promise.all([
-          axios.get<NewsItem[]>("https://tamik327.pythonanywhere.com/api/news/"),
-          axios.get<Category[]>("https://tamik327.pythonanywhere.com/api/categories/")
-        ]);
-        
-        setNews(newsResponse.data);
-        setCategories(categoriesResponse.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Ошибка при загрузке данных:", error);
-        setError("Не удалось загрузить данные. Пожалуйста, попробуйте позже.");
-        setLoading(false);
-      }
-    };
+  const [currentMainImageIndex, setCurrentMainImageIndex] = useState<{ [key: number]: number }>({});
+  const [newComment, setNewComment] = useState<{ [key: number]: string }>({});
+  const [showAddNews, setShowAddNews] = useState(false);
 
+  const fetchData = async () => {
+    try {
+      const [newsResponse, categoriesResponse] = await Promise.all([
+        axios.get<{ results: NewsItem[] }>("https://tamik327.pythonanywhere.com/api/news/"),
+        axios.get<{ results: Category[] }>("https://tamik327.pythonanywhere.com/api/categories/")
+      ]);
+
+      setNews(newsResponse.data.results);
+      setCategories(categoriesResponse.data.results);
+    } catch (error) {
+      console.error("Ошибка загрузки данных:", error);
+      setError("Не удалось загрузить данные");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchCommentsForNews = async () => {
+      const token = localStorage.getItem('accessToken');
+      const commentsMap: { [key: number]: Comment[] } = {};
+
+      await Promise.all(
+        news.map(async (item) => {
+          try {
+            const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+            const response = await axios.get<{
+              count: number;
+              results: Comment[];
+            }>(`https://tamik327.pythonanywhere.com/api/comments/?news=${item.id}`, config);
+
+            commentsMap[item.id] = response.data.results.filter(c => c.news === item.id);
+          } catch (error) {
+            console.error(`Ошибка загрузки комментариев для новости ${item.id}:`, error);
+            commentsMap[item.id] = [];
+          }
+        })
+      );
+
+      setComments(commentsMap);
+    };
+
+    if (news.length > 0) fetchCommentsForNews();
+  }, [news]);
+
   const handleCategoryToggle = (categoryId: number) => {
-    setSelectedCategories(prev => 
+    setSelectedCategories(prev =>
       prev.includes(categoryId)
         ? prev.filter(id => id !== categoryId)
         : [...prev, categoryId]
@@ -88,57 +118,8 @@ export const Lifeinst = () => {
   };
 
   const filteredNews = selectedCategories.length > 0
-    ? news.filter(item => selectedCategories.includes(item.category))
+    ? news.filter((item: NewsItem) => selectedCategories.includes(item.category))
     : news;
-
-  useEffect(() => {
-    if (news.length === 0) return;
-    
-    const mockComments: Comment[] = [
-      {
-        id: 1,
-        text: 'Это пример комментария. Очень интересная новость!',
-        created_at: '2024-03-20T10:00:00Z',
-        author: {
-          username: 'user1',
-          avatar: 'https://via.placeholder.com/40',
-        },
-      },
-      {
-        id: 2,
-        text: 'Еще один комментарий. Спасибо за информацию!',
-        created_at: '2024-03-20T11:30:00Z',
-        author: {
-          username: 'user2',
-        },
-      },
-      {
-        id: 3,
-        text: 'И еще один пример комментария для демонстрации.',
-        created_at: '2024-03-20T12:45:00Z',
-        author: {
-          username: 'user3',
-          avatar: 'https://via.placeholder.com/40',
-        },
-      },
-      {
-        id: 4,
-        text: 'И еще один пример комментария для демонстрации.',
-        created_at: '2024-03-20T12:45:00Z',
-        author: {
-          username: 'user3',
-          avatar: 'https://via.placeholder.com/40',
-        },
-      }
-    ];
-
-    const initialComments = news.reduce((acc, item) => {
-      acc[item.id] = mockComments;
-      return acc;
-    }, {} as { [key: number]: Comment[] });
-    
-    setComments(initialComments);
-  }, [news]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -163,216 +144,215 @@ export const Lifeinst = () => {
     }));
   };
 
-  const handleNextImage = (newsId: number, imagesLength: number) => {
-    setCurrentImageIndex(prev => ({
+  const handleImageSwap = (newsId: number, clickedIndex: number) => {
+    setCurrentMainImageIndex(prev => ({
       ...prev,
-      [newsId]: (prev[newsId] || 0) < imagesLength - 1 ? (prev[newsId] || 0) + 1 : 0
+      [newsId]: clickedIndex
     }));
   };
 
-  const handlePrevImage = (newsId: number, imagesLength: number) => {
-    setCurrentImageIndex(prev => ({
-      ...prev,
-      [newsId]: (prev[newsId] || 0) > 0 ? (prev[newsId] || 0) - 1 : imagesLength - 1
-    }));
-  };
-  const renderImages = (newsId: number, images: NewsItem['images']) => {
+  const renderImageCollage = (newsId: number, images: NewsItem['images']) => {
     if (images.length === 0) {
-      return (
-        <img
-          src="https://via.placeholder.com/150"
-          alt="Заглушка"
-          className="single-image"
-        />
-      );
+      return <img src="/default_news.jpg" alt="Заглушка" className="single-image" />;
     }
-  
-    if (images.length === 1) {
-      return (
-        <img
-          src={images[0].image}
-          alt={images[0].id.toString()}
-          className="single-image"
-          onError={(e) => {
-            e.currentTarget.src = 'https://via.placeholder.com/800x400';
-            e.currentTarget.alt = 'Ошибка загрузки';
-          }}
-        />
-      );
-    }
-  
-    const currentIndex = currentImageIndex[newsId] || 0;
-  
+
+    const mainIndex = currentMainImageIndex[newsId] || 0;
     return (
-      <div className="custom-slider">
-        <div className="slider-images">
-          {images.map((image, index) => (
-            <img
-              key={image.id}
-              src={image.image}
-              alt={image.id.toString()}
-              className={`news-image ${index === currentIndex ? 'active' : ''}`}
-              onError={(e) => {
-                e.currentTarget.src = 'https://via.placeholder.com/800x400';
-                e.currentTarget.alt = 'Ошибка загрузки';
-              }}
-            />
-          ))}
+      <div className="image-collage">
+        <div className="main-image-container">
+          <img
+            src={images[mainIndex].image}
+            alt={`Main-${images[mainIndex].id}`}
+            className="main-image"
+          />
         </div>
-        
-        <div className="slider-controls">
-          <button 
-            className="slider-arrow prev"
-            onClick={() => handlePrevImage(newsId, images.length)}
-          >
-            ‹
-          </button>
-          <button 
-            className="slider-arrow next"
-            onClick={() => handleNextImage(newsId, images.length)}
-          >
-            ›
-          </button>
-        </div>
-        
-        <div className="slider-dots">
-          {images.map((_, index) => (
-            <span
-              key={index}
-              className={`dot ${index === currentIndex ? 'active' : ''}`}
-              onClick={() => setCurrentImageIndex(prev => ({
-                ...prev,
-                [newsId]: index
-              }))}
-            />
-          ))}
-        </div>
+        {images.length > 1 && (
+          <div className="side-images">
+            {images.filter((_, i) => i !== mainIndex).map((image, index) => (
+              <div
+                key={image.id}
+                className="side-image-container"
+                onClick={() => handleImageSwap(newsId, index)}
+              >
+                <img
+                  src={image.image}
+                  alt={`Side-${image.id}`}
+                  className="side-image"
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   };
 
+  const handleCommentSubmit = async (newsId: number) => {
+    const token = localStorage.getItem('accessToken');
+    const text = newComment[newsId]?.trim();
+
+    if (!text || !token) {
+      alert('Необходимо авторизоваться!');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        'https://tamik327.pythonanywhere.com/api/comments/',
+        { news: newsId, text },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setComments(prev => ({
+        ...prev,
+        [newsId]: [...(prev[newsId] || []), response.data]
+      }));
+
+      setNewComment(prev => ({ ...prev, [newsId]: '' }));
+    } catch (error) {
+      console.error('Ошибка отправки:', error);
+    }
+  };
+
   return (
-    <>
-      <div className="life-ivits-container">
-        <h2>Жизнь института</h2>
-        <div className='novost-ivits'>
-          <div className='checkbox-novosti'>
-            <h4>Фильтр по категориям</h4>
-            {categories.map(category => (
-              <label className="checkbox-label" key={category.id}>
-                <input 
-                  type="checkbox" 
-                  checked={selectedCategories.includes(category.id)}
-                  onChange={() => handleCategoryToggle(category.id)}
-                />
-                <span className="checkbox-custom"></span>
-                {category.name}
-              </label>
-            ))}
-          </div>
-          <div className='novost-items'>
-            {loading ? (
-              <p>Загрузка новостей...</p>
-            ) : error ? (
-              <p>{error}</p>
-            ) : (
-              filteredNews.map((item) => {
-                const maxLength = 200;
-                const needsTruncation = item.content.length > maxLength;
-                const displayedContent = expandedNews[item.id] 
-                  ? item.content 
-                  : `${item.content.slice(0, maxLength)}${needsTruncation ? '...' : ''}`;
+    <div className="life-ivits-container">
+      <h2>Жизнь института</h2>
 
-                return (
-                  <div className='novost-item' key={item.id}>
-                    <div className="novost-item-header">
-                    <div className="image-container">
-                  {renderImages(item.id, item.images)}
-                </div>
-                      <div className="title-date">
-                        <h3>{item.title}</h3>
-                        <p className="publish-date">
-                          {formatDate(item.created_at)}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="tags">
-                      <span className="tag">
-                        {getCategoryName(item.category)}
-                      </span>
-                    </div>
+      <div className='novost-ivits'>
+        <div className='checkbox-novosti'>
+          <h4>Фильтр по категориям</h4>
+          {categories.map(category => (
+            <label key={category.id} className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={selectedCategories.includes(category.id)}
+                onChange={() => handleCategoryToggle(category.id)}
+              />
+              <span className="checkbox-custom"></span>
+              {category.name}
+            </label>
+          ))}
+        </div>
 
-                    <div className="novost-item-content">
-                      <p>
-                        {displayedContent}
-                        {needsTruncation && (
-                          <button 
-                            onClick={() => toggleExpand(item.id)}
-                            className="expand-btn"
-                          >
-                            {expandedNews[item.id] ? 'Свернуть' : 'Подробнее'}
-                          </button>
-                        )}
-                      </p>
-                    </div>
+        <div className='novost-items'>
+          {localStorage.getItem('accessToken') && (
+            <button 
+              className="add-news-btn"
+              onClick={() => setShowAddNews(true)}
+            >
+              Добавить новость
+            </button>
+          )}
 
-                    <div className="interactions">
-                      <div className="interaction-item">
-                        <FaRegThumbsUp />
-                        <span>{item.likes_count}</span>
-                      </div>
-                      <div className="interaction-item">
-                        <FaRegComment />
-                        <span>{item.comments_count}</span>
-                      </div>
-                      <div className="interaction-item">
-                        <FaRegShareSquare />
-                        <span>0</span>
-                      </div>
-                    </div>
+          {showAddNews && (
+            <Addnews
+              categories={categories}
+              onClose={() => setShowAddNews(false)}
+              onSuccess={fetchData}
+            />
+          )}
 
-                    <div className="comments-section">
-                      {comments[item.id]?.slice(0, showAllComments[item.id] ? undefined : 3)
-                        .map(comment => (
-                          <div className="comment" key={comment.id}>
-                            <img
-                              src={comment.author.avatar || 'https://via.placeholder.com/40'}
-                              alt="Аватар"
-                              className="comment-avatar"
-                            />
-                            <div className="comment-content">
-                              <div className="comment-header">
-                                <span className="username">
-                                  {comment.author.username}
-                                </span>
-                                <span className="comment-date">
-                                  {formatDate(comment.created_at)}
-                                </span>
-                              </div>
-                              <p className="comment-text">{comment.text}</p>
-                            </div>
-                          </div>
-                        ))}
-                      
-                      {item.comments_count > 3 && (
-                        <button
-                          className="show-comments-btn"
-                          onClick={() => toggleShowAllComments(item.id)}
-                        >
-                          {showAllComments[item.id] 
-                            ? 'Скрыть комментарии' 
-                            : 'Показать все комментарии'}
-                        </button>
-                      )}
+          {loading ? (
+            <div className="loader">Загрузка...</div>
+          ) : error ? (
+            <div className="error-message">{error}</div>
+          ) : (
+            filteredNews.map((item) => {
+              const commentsToShow = showAllComments[item.id] 
+                ? comments[item.id] 
+                : comments[item.id]?.slice(0, 1);
+
+              return (
+                <div className='novost-item' key={item.id}>
+                  <div className="novost-item-header">
+                    {renderImageCollage(item.id, item.images)}
+                    <div className="title-date">
+                      <h3>{item.title}</h3>
+                      <p className="publish-date">{formatDate(item.created_at)}</p>
                     </div>
                   </div>
-                );
-              })
-            )}
-          </div>
+
+                  <div className="tags">
+                    <span className="tag">{getCategoryName(item.category)}</span>
+                  </div>
+
+                  <div className="novost-item-content">
+                    <p>
+                      {expandedNews[item.id] 
+                        ? item.content 
+                        : `${item.content.slice(0, 200)}${item.content.length > 200 ? '...' : ''}`}
+                      {item.content.length > 200 && (
+                        <button 
+                          className="expand-btn"
+                          onClick={() => toggleExpand(item.id)}
+                        >
+                          {expandedNews[item.id] ? 'Свернуть' : 'Подробнее'}
+                        </button>
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="interactions">
+                    <div className="interaction-item">
+                      <FaRegThumbsUp /> {item.likes_count}
+                    </div>
+                    <div className="interaction-item">
+                      <FaRegComment /> {item.comments_count}
+                    </div>
+                  </div>
+
+                  <div className="comments-section">
+                    <div className={`comments-container ${showAllComments[item.id] ? 'expanded' : ''}`}>
+                      {commentsToShow?.map(comment => (
+                        <div className="comment" key={comment.id}>
+                          <img
+                            src={comment.author.avatar || '/default_avatar.jpg'}
+                            alt="Аватар"
+                            className="comment-avatar"
+                          />
+                          <div className="comment-content">
+                            <div className="comment-header">
+                              <span className="username">{comment.author.username}</span>
+                              <span className="comment-date">{formatDate(comment.created_at)}</span>
+                            </div>
+                            <p className="comment-text">{comment.text}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {comments[item.id]?.length > 1 && (
+                      <button
+                        className="toggle-comments-btn"
+                        onClick={() => toggleShowAllComments(item.id)}
+                      >
+                        {showAllComments[item.id] ? 'Скрыть' : 'Показать все'}
+                      </button>
+                    )}
+
+                    <div className="comment-form">
+                      <textarea
+                        value={newComment[item.id] || ''}
+                        onChange={(e) => setNewComment(prev => ({
+                          ...prev,
+                          [item.id]: e.target.value
+                        }))}
+                        placeholder="Оставьте комментарий..."
+                        rows={3}
+                      />
+                      <button
+                        onClick={() => handleCommentSubmit(item.id)}
+                        className="submit-comment-btn"
+                      >
+                        Отправить
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            }))}
         </div>
       </div>
-    </>
+    </div>
   );
 };

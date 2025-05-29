@@ -1,151 +1,3 @@
-#root, html, body {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  min-height: 100%;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-  background: #eeeff1;
-}
-
-.header {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  min-height: 5em;
-  background-color: #ffffff;
-  color: rgb(0, 85, 255);
-  width: 100%;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-/* В вашем CSS */
-.logo {
-  display: flex;
-  align-items: center; /* Выравнивание по вертикали */
-  gap: 12px; /* Расстояние между иконкой и текстом */
-}
-
-.img_logo {
-  height: 36px;
-  width: 36px;
-  display: flex;
-  align-items: center;
-}
-
-.logo img {
-  max-width: 100%;
-  height: auto;
-}
-
-.logo h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: rgb(0, 85, 255);
-  white-space: nowrap; /* Запрет переноса текста */
-}
-
-.nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-}
-
-.nav ul li {
-  margin: 0 15px;
-}
-
-.nav a {
-  text-decoration: none;
-  color: rgb(0, 85, 255);
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.nav a:hover {
-  text-decoration: underline;
-}
-
-.login-btn {
-  background-color: rgb(0, 85, 255);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-}
-
-.login-btn:hover {
-  background-color: rgb(0, 65, 200);
-}
-
-/* Стили для панели пользователя */
-/* Стили панели пользователя */
-.user-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 5px;
-}
-
-.user-main-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatar-container {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #f0f0f0;
-}
-
-.user-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.username {
-  font-size: 14px;
-  font-weight: 500;
-  color: #2c3e50;
-}
-
-.progress-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.progress-bar {
-  width: 100px;
-  height: 6px;
-  background: #e0e0e0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress {
-  height: 100%;
-  background: #0055ff;
-  transition: width 0.3s ease;
-}
-
-.level {
-  font-size: 12px;
-  font-weight: 600;
-  color: #0055ff;
-}
-
 /* Основное содержимое */
 .main-index {
   max-width: 1200px;
@@ -156,7 +8,7 @@
 /* /* Стили слайдера */
 .fade-slider {
   margin-left: 1%;
-  width: 98%; 
+  width: 98%;
   height: 700px;
   border-radius: 10px;
   position: relative;
@@ -205,9 +57,9 @@
   height: 14px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.4);
   cursor: pointer;
-  transition: 
+  transition:
     background 300ms ease,
     transform 300ms ease;
 }
@@ -218,8 +70,8 @@
 }
 
 .fade-slider__dot:hover {
-  background: rgba(255,255,255,0.8);
-} 
+  background: rgba(255, 255, 255, 0.8);
+}
 
 /* Секция с видео и новостями */
 .index-info {
@@ -263,7 +115,7 @@
 .news-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.3s ease;
   overflow: hidden;
@@ -287,7 +139,7 @@
   left: 0;
   right: 0;
   padding: 15px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
 }
 
 .news-image {
@@ -318,7 +170,7 @@
   font-size: 1.2rem;
   margin: 0;
   line-height: 1.3;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .news-excerpt {
@@ -458,31 +310,33 @@
   background: #2980b9;
 }
 
-.learning-features h5{
+.learning-features h5 {
   font-size: 18px;
-  font-family:'Exo 2';
+  font-family: 'Exo 2';
   color: #2c3e50;
 }
 
-.feature-card h6{
+.feature-card h6 {
   font-family: 'Exo 2';
   font-size: 14px;
 }
 
-.career-opportunities h5{
+.career-opportunities h5 {
   font-family: 'Exo 2';
   font-size: 14px;
 }
 
 
 @font-face {
-  font-family: 'Exo 2'; 
-  src: url(/fonts/Exo2-Italic-VariableFont_wght.ttf); 
- }
- @font-face {
-  font-family: 'IndieFlower'; 
-  src: url(/fonts/IndieFlower-Regular.ttf); 
- }
+  font-family: 'Exo 2';
+  src: url(/fonts/Exo2-Italic-VariableFont_wght.ttf);
+}
+
+@font-face {
+  font-family: 'IndieFlower';
+  src: url(/fonts/IndieFlower-Regular.ttf);
+}
+
 .error-message {
   background: #ffe3e3;
   color: #ff0000;
@@ -763,7 +617,8 @@
   position: relative;
   padding-top: 56.25%;
   overflow: hidden;
-  user-select: none; /* Добавляем запрет выделения */
+  user-select: none;
+  /* Добавляем запрет выделения */
 }
 
 .slide-image img {
@@ -773,9 +628,12 @@
   height: 100%;
   object-fit: contain;
   transition: transform 0.3s ease;
-  pointer-events: none; /* Блокируем события мыши на изображении */
-  user-select: none; /* Запрещаем выделение */
-  -webkit-user-drag: none; /* Отключаем drag в WebKit */
+  pointer-events: none;
+  /* Блокируем события мыши на изображении */
+  user-select: none;
+  /* Запрещаем выделение */
+  -webkit-user-drag: none;
+  /* Отключаем drag в WebKit */
 }
 
 .slide:hover .slide-image img {
@@ -800,16 +658,16 @@
   .slider-section {
     padding: 2rem 1rem;
   }
-  
+
   .slider-title {
     font-size: 2rem;
   }
-  
+
   .slide {
     flex: 0 0 100%;
     margin: 0 1rem;
   }
-  
+
   .slider {
     gap: 1rem;
   }
@@ -819,284 +677,84 @@
   .slide-caption p {
     font-size: 1rem;
   }
-  
+
   .slider-title {
     font-size: 1.75rem;
   }
 }
-/* Подвал */
-.footer {
-  background-color: #2c3e50;
-  color: #fff;
-  padding: 30px 0;
-  margin-top: 50px;
-}
 
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  padding: 0 20px;
-}
-
-.social-icons {
-  display: flex;
-  margin-top: 10px;
-  margin-right: 20px;
-  gap: 15px;
-}
-
-.social-icons a {
-  color: #fff;
-  transition: color 0.3s;
-}
-
-.social-icons a:hover {
-  color: #1e90ff;
-}
-
-.address, .contact-info {
-  flex: 1;
-  min-width: 250px;
-  margin-bottom: 20px;
-}
-
-.address p, .contact-info p {
-  margin: 5px 0;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-/* Горизонтальный слайдер с фото */
+/* Основные стили секции отзывов */
 .testimonials-section {
   border-radius: 10px;
-  margin: 0 0;
+  margin: 0 0 50px 0;
   background: linear-gradient(135deg, #eceef0 0%, #eceef0 100%);
+  padding: 20px 0;
+  position: relative;
 }
-.section-title{
-  display: flex;
-  justify-content: center;
+
+.section-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.section-title {
   font-size: 24px;
-  padding-top: 30px;
-  margin-bottom: -30px;
-}
-.testimonials-slider {
-  max-width: 1000px;
-  margin: 0 auto;
-  overflow: hidden;
-  position: relative;
-}
-
-.slider-container {
-  display: flex;
-  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  width: 100%;
-}
-
-.testimonial-card {
-  flex: 0 0 100%;
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  padding: 10px;
-  min-height: 350px;
-}
-
-.author-photo {
-  flex: 0 0 250px;
-  border-radius: 30px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.author-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.testimonial-content {
-  flex: 1;
-  position: relative;
-  padding-left: 40px;
-}
-
-.testimonial-content::before {
-  content: '“';
-  position: absolute;
-  font-size: 120px;
-  color: #0055ff;
-  opacity: 0.1;
-  left: -20px;
-  top: -40px;
-  font-family: serif;
-}
-
-.testimonial-text {
-  font-size: 20px;
-  line-height: 1.6;
-  color: #333;
-  margin-bottom: 25px;
-  position: relative;
-  z-index: 1;
-}
-
-.author-info {
-  border-left: 3px solid #0055ff;
-  padding-left: 20px;
-}
-
-.author-name {
-  margin: 0;
-  font-size: 18px;
   color: #222;
+  margin-bottom: 20px;
   font-weight: 600;
 }
 
-.author-role {
-  margin: 5px 0 0;
-  font-size: 16px;
+/* Стили для состояния загрузки и ошибок */
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
   color: #666;
 }
 
-/* Элементы управления */
-.slider-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  margin-top: 10px;
+.error {
+  text-align: center;
+  padding: 40px;
+  color: #ff4444;
+  background: rgba(255, 0, 0, 0.05);
+  border-radius: 8px;
+  margin: 20px;
 }
 
-.arrow {
-  background: none;
-  border: none;
-  font-size: 40px;
-  color: #0055ff;
-  cursor: pointer;
-  padding: 0 15px;
-  transition: transform 0.3s;
+.error-message {
+  color: #ff4444;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(255, 0, 0, 0.05);
+  border-radius: 8px;
 }
 
-.arrow:hover {
-  transform: scale(1.2);
-}
-
-/* Удаляем все стили для стрелок */
-
-.dots-container {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin: 30px 0;
-  padding: 10px 0;
-  position: relative;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(0, 85, 255, 0.2);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.dot::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
+.retry-button {
   background: #0055ff;
-  transition: left 0.3s;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-.dot.active::before {
-  left: 0;
+.retry-button:hover {
+  background: #0033cc;
 }
 
-.dot.active {
-  transform: scale(1.3);
-  box-shadow: 0 2px 8px rgba(0, 85, 255, 0.2);
-}
-
-.dot:hover {
-  transform: scale(1.2);
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .dots-container {
-    margin: 20px 0;
-    gap: 12px;
-  }
-  
-  .dot {
-    width: 10px;
-    height: 10px;
-  }
-  
-  .dot.active {
-    transform: scale(1.2);
-  }
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .testimonial-card {
-    flex-direction: column;
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .author-photo {
-    width: 150px;
-    height: 150px;
-  }
-  
-  .testimonial-content {
-    padding-left: 0;
-  }
-  
-  .testimonial-content::before {
-    left: 50%;
-    transform: translateX(-50%);
-    top: -30px;
-  }
-  
-  .author-info {
-    border-left: none;
-    padding-left: 0;
-  }
-  
-  .testimonial-text {
-    font-size: 16px;
-  }
-}
-/* Анимации */
-@keyframes colorChange {
-  0% { color: #0055ff; }
-  50% { color: #00aaff; }
-  100% { color: #0055ff; }
-}
 
 /* Адаптивность */
 @media (max-width: 1024px) {
   .index-info {
     flex-direction: column;
   }
-  
+
   .rolikvits iframe {
     height: 350px;
   }
-  
+
   .slide {
     flex: 0 0 40%;
   }
@@ -1108,38 +766,38 @@
     height: auto;
     padding: 15px;
   }
-  
+
   .nav ul {
     margin-top: 15px;
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .programm-training {
     flex-direction: column;
   }
-  
+
   .plashka-container {
     width: 100%;
     display: flex;
     overflow-x: auto;
   }
-  
+
   .plashka {
     min-width: 150px;
     border-left: none;
     border-bottom: 4px solid transparent;
   }
-  
+
   .plashka.active {
     border-left: none;
     border-bottom: 4px solid #0055ff;
   }
-  
+
   .info-block {
     width: 100%;
   }
-  
+
   .slide {
     flex: 0 0 50%;
   }
@@ -1149,38 +807,40 @@
   .banner {
     height: 300px;
   }
-  
+
   .small-inf0-1 {
     flex-direction: column;
     height: auto;
   }
-  
+
   .small-inf0-1 img {
     width: 100%;
     height: 150px;
     border-radius: 30px 30px 0 0;
   }
-  
+
   .name-descr {
     width: 100%;
     padding: 15px;
   }
-  
+
   .slide {
     flex: 0 0 80%;
   }
-  
+
   .footer-content {
     flex-direction: column;
   }
-  
-  .address, .contact-info {
+
+  .address,
+  .contact-info {
     margin-top: 20px;
   }
 }
 
 /* Мобильная адаптация */
 @media (max-width: 768px) {
+
   /* Шапка */
   .header {
     flex-direction: column;
@@ -1278,6 +938,10 @@
     padding-left: 0;
   }
 
+  .testimonial-text {
+    font-family: 'Exo 2';
+  }
+
   .testimonial-content::before {
     left: 50%;
     transform: translateX(-50%);
@@ -1302,6 +966,7 @@
 }
 
 @media (max-width: 480px) {
+
   /* Шапка */
   .nav ul li {
     margin: 0 5px;
@@ -1368,214 +1033,5 @@
 
   .news-excerpt {
     font-size: 14px;
-  }
-}
-
-
-
-/* Бургер-кнопка */
-.burger-btn {
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 10px;
-  margin-right: 50px;
-  z-index: 1000;
-}
-
-.burger-line {
-  width: 30px;
-  height: 3px;
-  background-color: rgb(0, 85, 255);
-  margin: 5px 0;
-  transition: all 0.3s ease;
-}
-
-.burger-line.open:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-
-.burger-line.open:nth-child(2) {
-  opacity: 0;
-}
-
-.burger-line.open:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-}
-
-/* Мобильное меню */
-.mobile-nav {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  z-index: 999;
-}
-
-.mobile-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.mobile-nav a {
-  color: rgb(0, 85, 255);
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-@media (max-width: 1100px) {
-  .burger-btn {
-    display: block;
-  }
-  
-  .nav {
-    display: none;
-  }
-  
-  .user-panel {
-    order: 3;
-  }
-  
-  .header {
-    justify-content: space-between;
-    padding: 15px 20px;
-    position: relative;
-  }
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.img_logo {
-  width: 40px;
-  height: 40px;
-}
-
-.img_logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-/* Бургер-кнопка */
-.burger-btn {
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-.burger-line {
-  width: 25px;
-  height: 2px;
-  background-color: #0055ff;
-  margin: 5px 0;
-  transition: all 0.3s ease;
-}
-
-.burger-line.open:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-
-.burger-line.open:nth-child(2) {
-  opacity: 0;
-}
-
-.burger-line.open:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
-}
-
-/* Мобильное меню */
-.mobile-nav {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.mobile-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.mobile-nav a, .mobile-login-btn {
-  color: #0055ff;
-  text-decoration: none;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  width: 100%;
-  text-align: left;
-}
-
-.mobile-login-btn {
-  background: #0055ff;
-  color: white;
-  border-radius: 4px;
-  margin-top: 1rem;
-}
-
-.mobile-user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.mobile-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.mobile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-@media (max-width: 1100px) {
-  .nav, .login-btn, .user-panel {
-    display: none;
-  }
-  
-  .burger-btn {
-    display: block;
-  }
-  
-  .header {
-    padding: 1rem;
-  }
-}
-
-@media (min-width: 1100px) {
-  .mobile-nav {
-    display: none;
   }
 }

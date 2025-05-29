@@ -1,0 +1,144 @@
+.quiz-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Стили для секции выбора уровня */
+.level-section {
+  text-align: center;
+  padding: 2rem;
+}
+
+.levels-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.level-card {
+  padding: 1.5rem;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.level-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Стили для вопросов */
+.question-section {
+  background: #f5f5f5;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.progress-counter {
+  text-align: right;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.question-text {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.options-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.option-button {
+  padding: 1rem;
+  background: white;
+  border: 2px solid #2196F3;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.option-button:hover {
+  background: #2196F3;
+  color: white;
+}
+
+/* Стили результатов */
+.result-section {
+  text-align: center;
+}
+
+.result-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.direction-name {
+  color: #4CAF50;
+  font-size: 1.5rem;
+  margin: 1rem 0;
+}
+
+.professions-list {
+  list-style: none;
+  padding: 0;
+  columns: 2;
+}
+
+.profession-item {
+  padding: 0.5rem 0;
+  color: #444;
+}
+
+/* Лоадер */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #2196F3;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Ошибки */
+.error-section {
+  text-align: center;
+  padding: 2rem;
+  color: #f44336;
+}
+
+@media (max-width: 768px) {
+  .quiz-container {
+    padding: 10px;
+  }
+  
+  .options-grid,
+  .levels-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .professions-list {
+    columns: 1;
+  }
+}

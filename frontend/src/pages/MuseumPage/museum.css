@@ -1,89 +1,296 @@
-.museum-h1 {
-    display: flex;
-    justify-content: center;
-    color: #0056b3;
-    margin-top: 2em;
+/* Базовые сбросы */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-.h2-expo {
-    display: flex;
-    justify-content: center;
-    color: #0056b3;
+/* Основной контейнер */
+.museum-container {
+    padding: 50px;
 }
 
-.museum-expo {
-    margin-left: 2em;
-    display: flex;
-    flex-flow: row;
+.museum-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
 }
 
-.expo-info {
-    justify-content: center;
-    margin-left: 50px;
+/* Лейаут */
+.museum-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
 }
 
-.museum-list {
-    margin-left: 20px;
+/* Список экспонатов */
+.exhibit-list {
+    border-right: 2px solid #eee;
+    padding-right: 20px;
 }
 
-.image-expo{
-    width: 500px;
-    height: 500px;
-}
-
-.search-bar-input {
-    margin-left: 25px;
-    margin-bottom: 20px;
-    margin-top: 15px;
-    border: 1px solid;
-    border-radius: 20px;
-    height: 30px;
-    width: 300px;
-    padding-left: 20px;
-}
-
-/* Стили для контейнера с карточками */
-.exhibits {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    height: calc(2.5 * 200px);
-    overflow-y: auto;
-    direction: rtl;
-    padding-left: 10px;
-}
-.exhibits {
-    scrollbar-width: thin;
-    scrollbar-color: #0056b3 #f1f1f1;
-    margin-bottom: 30px;
-}
-
-.exhibit {
-    flex: 0 0 auto;
-    cursor: pointer;
-    margin: 10px;
-    border: 1px solid #8f8f8f;
-    border-radius: 8px;
-    padding: 10px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    direction: ltr;
-}
-
-.exhibit:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.exhibit-image {
+.search-input {
     width: 100%;
-    height: 120px;
-    object-fit: cover;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #3498db;
     border-radius: 8px;
+    font-size: 16px;
+}
+
+.exhibit-grid {
+    display: grid;
+    gap: 15px;
+    overflow-y: auto;
+    padding-right: 10px;
+    height: calc(100% - 100px); /* Учитываем высоту поисковой строки */
+    grid-template-rows: repeat(auto-fit, minmax(220px, 1fr)); /* Фиксированная высота карточек */
+}
+
+.exhibit-card {
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.exhibit-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.exhibit-thumbnail {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.exhibit-title {
+    font-size: 16px;
+    color: #34495e;
+    text-align: center;
+}
+
+/* Детали экспоната */
+.exhibit-details {
+    padding: 10px;
+}
+
+.image-carousel {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.carousel-inner {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.main-image {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.carousel-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    background: rgba(255,255,255,0.9);
+    padding: 8px 15px;
+    border-radius: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.carousel-controls button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #3498db;
+    padding: 0 10px;
+    transition: color 0.2s;
+}
+
+.carousel-controls button:disabled {
+    color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.carousel-controls button:hover:not(:disabled) {
+    color: #2980b9;
+}
+
+.image-counter {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.image-description {
+    text-align: center;
+    margin-top: 15px;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+/* Информация об экспонате */
+.exhibit-info {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
 }
 
 .exhibit-name {
-    margin-top: 10px;
-    font-size: 16px;
-    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.exhibit-description {
+    line-height: 1.6;
+    color: #34495e;
+    margin-bottom: 20px;
+}
+
+.characteristics {
+    margin-top: 20px;
+}
+
+.characteristics h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.characteristic {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.characteristic:last-child {
+    border-bottom: none;
+}
+
+.characteristic dt {
+    font-weight: 600;
+    color: #3498db;
+}
+
+.characteristic dd {
+    color: #34495e;
+}
+
+/* Заглушка */
+.exhibit-placeholder {
     text-align: center;
+    padding: 50px;
+    color: #7f8c8d;
+    font-size: 18px;
+    border: 2px dashed #ecf0f1;
+    border-radius: 12px;
+}
+
+.no-images {
+    text-align: center;
+    padding: 40px;
+    color: #95a5a6;
+    border: 2px dashed #ecf0f1;
+    border-radius: 12px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .museum-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .exhibit-list {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 30px;
+    }
+    
+    .main-image {
+        max-height: 300px;
+    }
+    
+    .characteristic {
+        grid-template-columns: 1fr;
+    }
+}
+/* Добавьте эти стили в существующий CSS */
+
+.museum-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+    height: 80vh;
+    overflow: hidden; /* Важно для ограничения области прокрутки */
+}
+
+.exhibit-list {
+    border-right: 2px solid #eee;
+    padding-right: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Скрываем переполнение у родительского контейнера */
+}
+
+
+
+/* Улучшенные стили для скроллбара */
+.exhibit-grid::-webkit-scrollbar {
+    width: 10px;
+}
+
+.exhibit-grid::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 5px;
+}
+
+.exhibit-grid::-webkit-scrollbar-thumb {
+    background: #3498db;
+    border-radius: 5px;
+    border: 2px solid #f5f5f5;
+}
+
+.exhibit-grid::-webkit-scrollbar-thumb:hover {
+    background: #2980b9;
+}
+
+/* Для Firefox */
+.exhibit-grid {
+    scrollbar-width: thin;
+    scrollbar-color: #3498db #f5f5f5;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .museum-layout {
+        height: auto;
+        min-height: 90vh;
+    }
+    
+    .exhibit-list {
+        height: 60vh;
+        padding-bottom: 20px;
+    }
+    
+    .exhibit-grid {
+        height: calc(100% - 60px);
+        grid-template-rows: unset;
+    }
 }

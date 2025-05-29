@@ -46,33 +46,32 @@ export const Program = () => {
     const [programsError, setProgramsError] = useState<string | null>(null);
     const [currentPlashka, setCurrentPlashka] = useState(0);
     const [educationLevels, setEducationLevels] = useState<EducationLevel[]>([]);
-    const [departments, setDepartments] = useState<Department[]>([]);
+
+    const organizeByEducationLevel = (departments: Department[]): EducationLevel[] => {
+        const levelsMap = new Map<string, EducationLevel>();
+        
+        departments.forEach(department => {
+            department.programs.forEach(program => {
+                const level = program.level;
+                if (!levelsMap.has(level.code)) {
+                    levelsMap.set(level.code, {
+                        id: level.id,
+                        name: level.name,
+                        code: level.code,
+                        programs: []
+                    });
+                }
+                levelsMap.get(level.code)?.programs.push(program);
+            });
+        });
+        
+        return Array.from(levelsMap.values());
+    };
 
     useEffect(() => {    
         axios.get<Department[]>("https://tamik327.pythonanywhere.com/api/departments/with-programs/")
             .then(response => {
-                const departmentsData = response.data;
-                setDepartments(departmentsData);
-                
-                // Extract and organize programs by education level
-                const levelsMap = new Map<string, EducationLevel>();
-                
-                departmentsData.forEach(department => {
-                    department.programs.forEach(program => {
-                        const level = program.level;
-                        if (!levelsMap.has(level.code)) {
-                            levelsMap.set(level.code, {
-                                id: level.id,
-                                name: level.name,
-                                code: level.code,
-                                programs: []
-                            });
-                        }
-                        levelsMap.get(level.code)?.programs.push(program);
-                    });
-                });
-                
-                setEducationLevels(Array.from(levelsMap.values()));
+                setEducationLevels(organizeByEducationLevel(response.data));
                 setProgramsError(null);
             })
             .catch(error => {

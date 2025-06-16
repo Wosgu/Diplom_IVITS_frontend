@@ -1,93 +1,234 @@
-/* Базовые сбросы */
+:root {
+    --primary-color: #486d96;
+    --secondary-color: #5e8cc8;
+    --accent-color: #ff9c00;
+    --background-light: #f5f5f5;
+    --background-dark: #2d2d2d;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --border-color: #d4d4d4;
+    --success-color: #4caf50;
+    --error-color: #f44336;
+    --warning-color: #ff9800;
+    --info-color: #2196f3;
+    --sidebar-width: 300px;
+    --header-height: 60px;
+    --status-height: 30px;
+    --card-radius: 6px;
+    --transition-speed: 0.3s;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Основной контейнер */
-.museum-container {
-    padding: 50px;
+body {
+    background-color: var(--background-light);
+    color: var(--text-dark);
+    line-height: 1.6;
 }
 
-.museum-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #2c3e50;
-}
-
-/* Лейаут */
-.museum-layout {
+.museum-app {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 30px;
+    grid-template-rows: var(--header-height) 1fr var(--status-height);
+    height: 100vh;
+    overflow: hidden;
 }
 
-/* Список экспонатов */
-.exhibit-list {
-    border-right: 2px solid #eee;
-    padding-right: 20px;
+.app-header {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    color: var(--text-light);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    position: relative;
+}
+
+.burger-button {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-header h1 {
+    font-size: 1.4rem;
+    font-weight: 500;
+    flex-grow: 1;
+}
+
+.app-container {
+    display: flex;
+    height: calc(100vh - var(--header-height) - var(--status-height));
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: #e8e8e8;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-speed);
+    overflow-y: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 10;
+}
+
+.search-container {
+    padding: 15px;
+    background-color: #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 5;
 }
 
 .search-input {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border: 2px solid #3498db;
-    border-radius: 8px;
-    font-size: 16px;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+    font-size: 0.95rem;
+    transition: var(--transition-speed);
 }
 
-.exhibit-grid {
-    display: grid;
-    gap: 15px;
+.search-input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(94, 140, 200, 0.2);
+}
+
+.exhibit-list {
+    flex: 1;
     overflow-y: auto;
-    padding-right: 10px;
-    height: calc(100% - 100px); /* Учитываем высоту поисковой строки */
-    grid-template-rows: repeat(auto-fit, minmax(220px, 1fr)); /* Фиксированная высота карточек */
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    align-content: start;
 }
 
 .exhibit-card {
+    background-color: white;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--border-color);
     cursor: pointer;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all var(--transition-speed);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 180px;
 }
 
 .exhibit-card:hover {
+    border-color: var(--secondary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateY(-3px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.exhibit-thumbnail {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 12px;
+.exhibit-card.active {
+    border-color: var(--accent-color);
+    background-color: #fff8e1;
 }
 
-.exhibit-title {
-    font-size: 16px;
-    color: #34495e;
-    text-align: center;
+.card-header {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
-/* Детали экспоната */
-.exhibit-details {
-    padding: 10px;
+.card-icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
 }
 
-.image-carousel {
-    position: relative;
-    margin-bottom: 25px;
-}
-
-.carousel-inner {
-    position: relative;
-    border-radius: 12px;
+.card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
     overflow: hidden;
-    background: #f8f9fa;
+    text-overflow: ellipsis;
+    color: var(--text-dark);
+}
+
+.card-thumbnail {
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    min-height: 120px;
+    background-color: #f9f9f9;
+}
+
+.card-thumbnail img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    background-color: white;
+    padding: 25px;
+    margin-left: 0;
+    transition: margin-left var(--transition-speed);
+}
+
+.exhibit-viewer {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.viewer-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.viewer-header h2 {
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    font-size: 1.8rem;
+}
+
+.breadcrumbs {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.image-viewer {
+    margin-bottom: 30px;
+    background-color: #f9f9f9;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+}
+
+.image-container {
+    position: relative;
+    margin-bottom: 20px;
 }
 
 .main-image {
@@ -96,201 +237,373 @@
     object-fit: contain;
     display: block;
     margin: 0 auto;
+    border-radius: 6px;
+    background-color: white;
+    padding: 15px;
+    border: 1px solid var(--border-color);
 }
 
-.carousel-controls {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+.image-nav {
     display: flex;
-    gap: 20px;
+    justify-content: center;
     align-items: center;
-    background: rgba(255,255,255,0.9);
-    padding: 8px 15px;
-    border-radius: 25px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.carousel-controls button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-    color: #3498db;
-    padding: 0 10px;
-    transition: color 0.2s;
-}
-
-.carousel-controls button:disabled {
-    color: #bdc3c7;
-    cursor: not-allowed;
-}
-
-.carousel-controls button:hover:not(:disabled) {
-    color: #2980b9;
-}
-
-.image-counter {
-    font-weight: 500;
-    color: #2c3e50;
-}
-
-.image-description {
-    text-align: center;
-    margin-top: 15px;
-    color: #7f8c8d;
-    font-style: italic;
-}
-
-/* Информация об экспонате */
-.exhibit-info {
-    background: #f8f9fa;
-    padding: 25px;
-    border-radius: 12px;
-}
-
-.exhibit-name {
-    color: #2c3e50;
-    margin-bottom: 15px;
-}
-
-.exhibit-description {
-    line-height: 1.6;
-    color: #34495e;
-    margin-bottom: 20px;
-}
-
-.characteristics {
+    gap: 25px;
     margin-top: 20px;
 }
 
-.characteristics h3 {
-    color: #2c3e50;
-    margin-bottom: 15px;
+.image-nav button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    font-size: 1.1rem;
 }
 
-.characteristic {
-    display: grid;
-    grid-template-columns: 150px 1fr;
-    gap: 15px;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+.image-nav button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
-.characteristic:last-child {
-    border-bottom: none;
+.image-nav button:not(:disabled):hover {
+    background-color: var(--primary-color);
+    transform: scale(1.1);
 }
 
-.characteristic dt {
-    font-weight: 600;
-    color: #3498db;
-}
-
-.characteristic dd {
-    color: #34495e;
-}
-
-/* Заглушка */
-.exhibit-placeholder {
+.image-counter {
+    font-size: 1rem;
+    color: #555;
+    min-width: 120px;
     text-align: center;
-    padding: 50px;
-    color: #7f8c8d;
-    font-size: 18px;
-    border: 2px dashed #ecf0f1;
-    border-radius: 12px;
+    font-weight: 500;
+}
+
+.image-description {
+    padding: 15px;
+    background-color: #f0f0f0;
+    border-radius: var(--card-radius);
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
 }
 
 .no-images {
     text-align: center;
-    padding: 40px;
-    color: #95a5a6;
-    border: 2px dashed #ecf0f1;
-    border-radius: 12px;
+    padding: 50px;
+    color: #888;
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-    .museum-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .exhibit-list {
-        border-right: none;
-        padding-right: 0;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 30px;
-    }
-    
-    .main-image {
-        max-height: 300px;
-    }
-    
-    .characteristic {
-        grid-template-columns: 1fr;
-    }
+.no-images-icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    opacity: 0.7;
 }
-/* Добавьте эти стили в существующий CSS */
 
-.museum-layout {
+.exhibit-details {
     display: grid;
-    grid-template-columns: 320px 1fr;
     gap: 30px;
-    height: 80vh;
-    overflow: hidden; /* Важно для ограничения области прокрутки */
 }
 
-.exhibit-list {
-    border-right: 2px solid #eee;
-    padding-right: 20px;
-    height: 100%;
+.details-section {
+    background-color: #f9f9f9;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--border-color);
+    padding: 25px;
+}
+
+.section-title {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.section-content {
+    line-height: 1.7;
+    font-size: 1rem;
+    color: #444;
+}
+
+.characteristics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.characteristic-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed #ddd;
+}
+
+.char-name {
+    font-weight: 600;
+    color: #555;
+}
+
+.char-value {
+    color: #333;
+    text-align: right;
+    font-weight: 500;
+}
+
+.welcome-screen {
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Скрываем переполнение у родительского контейнера */
+    align-items: center;
+    justify-content: center;
+    height: 70vh;
+    text-align: center;
+    color: #666;
 }
 
-
-
-/* Улучшенные стили для скроллбара */
-.exhibit-grid::-webkit-scrollbar {
-    width: 10px;
+.welcome-icon {
+    font-size: 4.5rem;
+    margin-bottom: 25px;
+    opacity: 0.8;
 }
 
-.exhibit-grid::-webkit-scrollbar-track {
-    background: #f5f5f5;
-    border-radius: 5px;
+.welcome-screen h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.8rem;
 }
 
-.exhibit-grid::-webkit-scrollbar-thumb {
-    background: #3498db;
-    border-radius: 5px;
-    border: 2px solid #f5f5f5;
+.welcome-screen p {
+    font-size: 1.1rem;
+    max-width: 500px;
+    line-height: 1.6;
 }
 
-.exhibit-grid::-webkit-scrollbar-thumb:hover {
-    background: #2980b9;
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    color: #888;
+    font-size: 1.1rem;
 }
 
-/* Для Firefox */
-.exhibit-grid {
-    scrollbar-width: thin;
-    scrollbar-color: #3498db #f5f5f5;
+.status-bar {
+    background-color: #e0e0e0;
+    border-top: 1px solid var(--border-color);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    font-size: 0.85rem;
+    color: #555;
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-    .museum-layout {
-        height: auto;
-        min-height: 90vh;
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-item span:first-child {
+    font-weight: 500;
+}
+
+.loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: white;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid var(--secondary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 25px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: white;
+    text-align: center;
+    padding: 30px;
+}
+
+.error-icon {
+    font-size: 3.5rem;
+    margin-bottom: 25px;
+    color: var(--error-color);
+}
+
+.error-screen h2 {
+    color: var(--error-color);
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.error-screen p {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    max-width: 500px;
+    line-height: 1.6;
+}
+
+.error-screen button {
+    margin-top: 15px;
+    padding: 12px 30px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.error-screen button:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+    padding: 10px 15px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.back-button:hover {
+    background-color: var(--primary-color);
+}
+
+.show-menu-button {
+    padding: 12px 25px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    font-size: 1rem;
+}
+
+.show-menu-button:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* Мобильные стили */
+@media (max-width: 767px) {
+    .museum-app.mobile-view .sidebar {
+        transform: translateX(-100%);
     }
-    
+
+    .museum-app.mobile-view .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .museum-app.mobile-view .main-content {
+        margin-left: 0;
+    }
+
     .exhibit-list {
-        height: 60vh;
-        padding-bottom: 20px;
+        grid-template-columns: 1fr;
     }
-    
-    .exhibit-grid {
-        height: calc(100% - 60px);
-        grid-template-rows: unset;
+
+    .image-nav {
+        gap: 15px;
+    }
+
+    .image-counter {
+        min-width: 100px;
+    }
+
+    .viewer-header h2 {
+        font-size: 1.4rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+    }
+
+    .status-bar {
+        gap: 15px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Очень маленькие экраны (iPhone SE) */
+@media (max-width: 320px) {
+    :root {
+        --header-height: 50px;
+        --status-height: 25px;
+    }
+
+    .app-header h1 {
+        font-size: 1.1rem;
+    }
+
+    .card-thumbnail {
+        min-height: 100px;
+    }
+
+    .main-image {
+        max-height: 250px;
+        padding: 8px;
+    }
+
+    .image-nav button {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .status-bar {
+        padding: 0 10px;
+        gap: 8px;
+        font-size: 0.7rem;
+    }
+
+    .welcome-icon, .error-icon {
+        font-size: 2.5rem;
+    }
+
+    .welcome-screen h2, .error-screen h2 {
+        font-size: 1.2rem;
+    }
+
+    .welcome-screen p, .error-screen p {
+        font-size: 0.9rem;
+    }
+
+    .details-section {
+        padding: 15px;
     }
 }

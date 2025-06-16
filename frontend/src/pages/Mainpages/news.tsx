@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ApiEndpointHelper } from "../../Context/AuthContext";
 
 interface Tag {
     id: number;
@@ -44,8 +45,9 @@ export const News = () => {
     useEffect(() => {
         const controller = new AbortController();
         
-        axios.get<NewsItem[]>("https://tamik327.pythonanywhere.com/api/news/latest_news/", {
-            signal: controller.signal
+        axios.get<NewsItem[]>(ApiEndpointHelper.latest_news(), {
+            signal: controller.signal,
+            withCredentials:true
         })
         .then(response => {
             setNews(response.data);

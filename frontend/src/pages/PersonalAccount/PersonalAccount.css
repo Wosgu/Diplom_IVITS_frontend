@@ -162,12 +162,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Основные стили */
-.stud-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
 
 .stud-header {
   display: flex;
@@ -261,4 +255,46 @@
 
 .profile-info {
   display: grid;
+}
+
+/* Стили для режима редактирования */
+.edit-input {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn, .save-btn, .cancel-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.edit-btn {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: 1px solid #45a049;
+}
+
+.cancel-btn {
+  background-color: #f44336;
+  color: white;
+  border: 1px solid #d32f2f;
 }

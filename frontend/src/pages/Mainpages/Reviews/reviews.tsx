@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { AddTestimonial, TestimonialItem } from "../AddStatic/AddTestimonial/addtestimonial";
 import './reviews.css';
+import axios from "axios";
+import { ApiEndpointHelper } from "../../../Context/AuthContext";
+import { useAuth } from "../../../Context/AuthContext";
+import Cookies from 'js-cookie';
 
 interface ApiResponse {
   count: number;
@@ -23,23 +27,24 @@ export const Reviews = () => {
   const [testimonialsData, setTestimonialsData] = useState<TestimonialItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { userData } = useAuth();
+  const isAdmin = ApiEndpointHelper.isAdmin(userData);
 
+  // Загрузка отзывов
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch("https://tamik327.pythonanywhere.com/api/reviews/");
+        const response = await axios.get<ApiResponse>(
+          ApiEndpointHelper.reviews(),
+          { withCredentials: true }
+        );
         
-        if (!response.ok) {
-          throw new Error(`Ошибка HTTP: ${response.status}`);
-        }
-
-        const data: ApiResponse = await response.json();
-        
-        if (!data.results || !Array.isArray(data.results)) {
+        if (!response.data.results || !Array.isArray(response.data.results)) {
           throw new Error('Некорректный формат данных от сервера');
         }
 
-        const formattedData = data.results.map(item => ({
+        const formattedData = response.data.results.map(item => ({
           id: item.id,
           author: item.author,
           role: item.course,
@@ -89,36 +94,44 @@ export const Reviews = () => {
   };
 
   const handleAddTestimonial = async (testimonial: Omit<TestimonialItem, 'id'>) => {
+    if (isSubmitting || !isAdmin) return;
+    
+    setIsSubmitting(true);
+    setError(null);
+
     try {
       const formData = new FormData();
       formData.append('author', testimonial.author);
       formData.append('course', testimonial.role);
       formData.append('text', testimonial.text);
       
-      if (testimonial.photo && testimonial.photo !== "/rabota.png") {
+      if (testimonial.photo && testimonial.photo !== "/rabota.png" && testimonial.photo.startsWith('blob:')) {
         const response = await fetch(testimonial.photo);
         const blob = await response.blob();
         const file = new File([blob], 'review-image.jpg', { type: blob.type });
         formData.append('image', file);
       }
 
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch("https://tamik327.pythonanywhere.com/api/reviews/", {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Ошибка при отправке отзыва');
+      const token = Cookies.get("access_token");
+      if (!token) {
+        throw new Error('Требуется авторизация');
       }
 
-      const fetchResponse = await fetch("https://tamik327.pythonanywhere.com/api/reviews/");
-      const newData: ApiResponse = await fetchResponse.json();
+      await axios.post(ApiEndpointHelper.reviews(), formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      });
+
+      // Обновляем список отзывов
+      const fetchResponse = await axios.get<ApiResponse>(
+        ApiEndpointHelper.reviews(),
+        { withCredentials: true }
+      );
       
-      const updatedTestimonials = newData.results.map(item => ({
+      const updatedTestimonials = fetchResponse.data.results.map(item => ({
         id: item.id,
         author: item.author,
         role: item.course,
@@ -132,6 +145,8 @@ export const Reviews = () => {
     } catch (err) {
       console.error('Ошибка при добавлении отзыва:', err);
       setError(err instanceof Error ? err.message : 'Ошибка при добавлении отзыва');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -157,7 +172,7 @@ export const Reviews = () => {
       
       <div className="section-header">
         <h3 className="section-title">Отзывы студентов</h3>
-        <AddTestimonial onSubmit={handleAddTestimonial} />
+        {isAdmin && <AddTestimonial onSubmit={handleAddTestimonial} />}
       </div>
 
       {testimonialsData.length === 0 ? (

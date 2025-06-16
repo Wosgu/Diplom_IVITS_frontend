@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import './addtestimonial.css';
 
 export interface TestimonialItem {
@@ -7,10 +7,11 @@ export interface TestimonialItem {
   text: string;
   role: string;
   photo: string;
+  created_at?: string;
 }
 
 interface AddTestimonialProps {
-  onSubmit: (testimonial: Omit<TestimonialItem, 'id'>) => void;
+  onSubmit: (testimonial: Omit<TestimonialItem, 'id'>) => Promise<void>;
 }
 
 export const AddTestimonial: React.FC<AddTestimonialProps> = ({ onSubmit }) => {
@@ -19,67 +20,43 @@ export const AddTestimonial: React.FC<AddTestimonialProps> = ({ onSubmit }) => {
   const [course, setCourse] = useState("");
   const [text, setText] = useState("");
   const [photoPreview, setPhotoPreview] = useState("");
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setPhotoFile(file);
       setPhotoPreview(URL.createObjectURL(file));
     }
   };
 
+  const resetForm = () => {
+    setAuthor("");
+    setCourse("");
+    setText("");
+    setPhotoPreview("");
+    formRef.current?.reset();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSubmitting) return;
+    
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append('author', author);
-      formData.append('course', course);
-      formData.append('text', text);
-      if (photoFile) {
-        formData.append('image', photoFile);
-      }
-
-      const token = localStorage.getItem('accessToken');
-      if (!token) {
-        throw new Error('Требуется авторизация');
-      }
-
-      const response = await fetch("https://tamik327.pythonanywhere.com/api/reviews/", {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
+      await onSubmit({
+        author,
+        role: course,
+        text,
+        photo: photoPreview || "/rabota.png"
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Ошибка при отправке отзыва');
-      }
-
-      const data = await response.json();
-      
-      // Вызываем onSubmit с данными нового отзыва
-      onSubmit({
-        author: data.author,
-        role: data.course,
-        text: data.text,
-        photo: data.image_url || "/rabota.png"
-      });
-
-      // Закрываем модальное окно и сбрасываем форму
       setIsModalOpen(false);
-      setAuthor("");
-      setCourse("");
-      setText("");
-      setPhotoPreview("");
-      setPhotoFile(null);
+      resetForm();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
     } finally {
@@ -101,14 +78,17 @@ export const AddTestimonial: React.FC<AddTestimonialProps> = ({ onSubmit }) => {
           <div className="modal-content">
             <button 
               className="modal-close"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setIsModalOpen(false);
+                resetForm();
+              }}
               disabled={isSubmitting}
             >
               &times;
             </button>
             <h3>Добавить новый отзыв</h3>
             {error && <div className="error-message">{error}</div>}
-            <form onSubmit={handleSubmit}>
+            <form ref={formRef} onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>Автор:</label>
                 <input
@@ -160,7 +140,10 @@ export const AddTestimonial: React.FC<AddTestimonialProps> = ({ onSubmit }) => {
                 </button>
                 <button 
                   type="button" 
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    resetForm();
+                  }}
                   disabled={isSubmitting}
                 >
                   Отмена

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useAuth } from "../../Context/AuthContext";
+import Cookies from "js-cookie";
 import "./qiuz.css";
 
 interface EducationLevel {
@@ -26,6 +28,13 @@ interface Option {
   text: string;
 }
 
+interface Program {
+  id: number;
+  program_name: string;
+  level: EducationLevel;
+  description: string;
+}
+
 interface TestSession {
   id: number;
   education_level: string;
@@ -33,267 +42,402 @@ interface TestSession {
   completed: boolean;
 }
 
-interface Department {
-  id: number;
-  name: string;
-}
-
-interface ProgramFeature {
-  id: number;
-  title: string;
-  description: string;
-  program: number;
-}
-
-interface Program {
-  id: number;
-  department: Department;
-  level: EducationLevel;
-  features: ProgramFeature[];
-  career_opportunities: string[];
-  code: string;
-  name: string;
-  program_name: string;
-  form: string;
-  description: string;
-}
-
 interface TestResult {
-  id: number;
   recommended_programs: Program[];
-  created_at: string;
 }
 
-interface Answer {
+interface AnswerPayload {
   question: number;
   answer: number;
 }
 
-const api = axios.create({
-  baseURL: "https://tamik327.pythonanywhere.com/api/",
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("accessToken");
-      window.location.href = "/login";
-    }
-    return Promise.reject(error);
-  }
-);
+interface ApiResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
 
 export const QuizComponent = () => {
-  const [step, setStep] = useState<"loading" | "level" | "questions" | "result" | "error">("loading");
+  const { isAuthenticated, getAuthHeader } = useAuth();
+  const [step, setStep] = useState<"intro" | "loading" | "level" | "groups" | "questions" | "result" | "error" | "auth_required">("intro");
   const [levels, setLevels] = useState<EducationLevel[]>([]);
   const [questionGroups, setQuestionGroups] = useState<QuestionGroup[]>([]);
+  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Answer[]>([]);
+  const [answers, setAnswers] = useState<AnswerPayload[]>([]);
   const [result, setResult] = useState<TestResult | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<number | null>(null);
+  const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
+  const loadLevels = async () => {
+    try {
+      setStep("loading");
+      const response = await axios.get<Program[]>(
+        "https://vits44.ru/api/programs/active/",
+        {
+          ...getAuthHeader(),
+          withCredentials: true
+        }
+      );
 
-    const fetchLevels = async () => {
-      try {
-        const response = await api.get<EducationLevel[]>("/education-levels/");
-        setLevels(response.data);
-        setStep("level");
-      } catch (error) {
-        console.error("Ошибка загрузки уровней:", error);
+      if (!Array.isArray(response.data)) {
+        throw new Error("Сервер вернул данные в неожиданном формате");
+      }
+
+      const levelsMap = new Map<number, EducationLevel>();
+      response.data.forEach(program => {
+        if (program.level) {
+          levelsMap.set(program.level.id, program.level);
+        }
+      });
+
+      if (levelsMap.size === 0) {
+        throw new Error("Не найдено ни одного уровня образования");
+      }
+
+      setLevels(Array.from(levelsMap.values()));
+      setStep(isAuthenticated ? "level" : "auth_required");
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setStep("auth_required");
+      } else {
+        console.error("Ошибка загрузки уровней:", err);
+        setError(err instanceof Error ? err.message : "Неизвестная ошибка");
         setStep("error");
       }
-    };
+    }
+  };
 
-    fetchLevels();
-  }, []);
-
-  const handleLevelSelect = async (levelId: number) => {
+  const loadQuestionGroups = async (levelId: number) => {
     try {
-      setLoading(true);
-      const sessionResponse = await api.post<TestSession>("/start-test/", {
-        level_id: levelId,
-      });
-      setSessionId(sessionResponse.data.id);
+      if (!isAuthenticated) {
+        setStep("auth_required");
+        return;
+      }
 
-      const groupsResponse = await api.get<QuestionGroup[]>("/question-groups/", {
-        params: { level_id: levelId },
-      });
+      setStep("loading");
+      const response = await axios.get<ApiResponse<QuestionGroup>>(
+        `https://vits44.ru/api/question-groups/?level_id=${levelId}`,
+        {
+          ...getAuthHeader(),
+          withCredentials: true
+        }
+      );
 
-      const filteredGroups = groupsResponse.data
-        .map((group) => ({
+      if (!response.data?.results) {
+        throw new Error("Неверный формат групп вопросов");
+      }
+
+      const validGroups = response.data.results
+        .map(group => ({
           ...group,
-          questions: group.questions.filter((q) => q.options.length > 0),
+          questions: group.questions
+            .filter(q => q.options && q.options.length > 0)
+            .sort((a, b) => a.order - b.order)
         }))
-        .filter((group) => group.questions.length > 0);
+        .filter(group => group.questions.length > 0);
 
-      setQuestionGroups(filteredGroups);
-      setStep("questions");
-    } catch (error) {
-      console.error("Ошибка:", error);
-      setStep("error");
-    } finally {
-      setLoading(false);
+      if (validGroups.length === 0) {
+        throw new Error("Нет доступных групп вопросов с вариантами ответов");
+      }
+
+      setQuestionGroups(validGroups);
+      setSelectedLevelId(levelId);
+      setStep("groups");
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setStep("auth_required");
+      } else {
+        console.error("Ошибка загрузки групп вопросов:", err);
+        setError(err instanceof Error ? err.message : "Неизвестная ошибка");
+        setStep("error");
+      }
     }
   };
 
-  const handleAnswerSelect = (optionId: number) => {
-    const currentQuestion = allQuestions[currentQuestionIndex];
-    
-    const newAnswer: Answer = {
-      question: Number(currentQuestion.id),
-      answer: Number(optionId)
+  const startTest = async () => {
+    try {
+      if (!selectedLevelId) {
+        throw new Error("Не выбран уровень образования");
+      }
+
+      if (!isAuthenticated) {
+        setStep("auth_required");
+        return;
+      }
+
+      const token = Cookies.get('access_token');
+      if (!token && isAuthenticated) {
+        throw new Error("Требуется авторизация");
+      }
+
+      setStep("loading");
+
+      const { data: session } = await axios.post<TestSession>(
+        "https://vits44.ru/api/start-test/",
+        { level_id: selectedLevelId },
+        {
+          ...getAuthHeader(),
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { "Authorization": `Bearer ${token}` })
+          }
+        }
+      );
+
+      setSessionId(session.id);
+
+      if (questionGroups.length > 0) {
+        setQuestions(questionGroups[0].questions);
+        setCurrentQuestionIndex(0);
+        setStep("questions");
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        setStep("auth_required");
+      } else {
+        console.error("Ошибка начала теста:", err);
+        setError(err instanceof Error ? err.message : "Неизвестная ошибка");
+        setStep("error");
+      }
+    }
+  };
+
+  const handleAnswer = (optionId: number) => {
+    const question = questions[currentQuestionIndex];
+    const newAnswer = {
+      question: question.id,
+      answer: optionId
     };
 
-    setAnswers((prev) => [...prev, newAnswer]);
+    const updatedAnswers = [...answers, newAnswer];
+    setAnswers(updatedAnswers);
 
-    if (currentQuestionIndex < allQuestions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
+    submitAnswers([newAnswer]);
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else if (currentGroupIndex < questionGroups.length - 1) {
+      const nextGroupIndex = currentGroupIndex + 1;
+      setCurrentGroupIndex(nextGroupIndex);
+      setQuestions(questionGroups[nextGroupIndex].questions);
+      setCurrentQuestionIndex(0);
     } else {
-      submitAnswers();
+      completeTest();
     }
   };
 
-  const submitAnswers = async () => {
+  const submitAnswers = async (answersToSubmit: AnswerPayload[]) => {
     if (!sessionId) {
-      console.error("Session ID is missing");
+      console.error("Отсутствует ID сессии тестирования");
+      return;
+    }
+
+    try {
+      await axios.post(
+        `https://vits44.ru/api/sessions/${sessionId}/answers/`,
+        answersToSubmit,
+        {
+          ...getAuthHeader(),
+          withCredentials: true
+        }
+      );
+    } catch (err) {
+      console.error("Ошибка отправки ответов:", err);
+    }
+  };
+
+  const completeTest = async () => {
+    if (!sessionId) {
+      setError("Отсутствует ID сессии тестирования");
       setStep("error");
       return;
     }
 
     try {
-      setLoading(true);
-      
-      // Отправка ответов
-      await api.post(`/sessions/${sessionId}/answers/`, answers);
-      
-      // Завершение теста
-      await api.post(`/sessions/${sessionId}/complete/`);
-      
-      // Получение результатов
-      const resultResponse = await api.get<TestResult>(`/results/${sessionId}/`);
-      
-      setResult(resultResponse.data);
-      setStep("result");
-    } catch (error) {
-      console.error("Ошибка:", error);
-      
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          alert("Сессия не найдена");
-        } else if (error.response?.status === 400) {
-          alert("Некорректные данные");
+      setStep("loading");
+
+      await axios.post(
+        `https://vits44.ru/api/sessions/${sessionId}/complete/`,
+        {},
+        {
+          ...getAuthHeader(),
+          withCredentials: true
         }
-      }
-      
+      );
+
+      const { data: result } = await axios.get<TestResult>(
+        `https://vits44.ru/api/results/${sessionId}/`,
+        {
+          ...getAuthHeader(),
+          withCredentials: true
+        }
+      );
+
+      setResult(result);
+      setStep("result");
+    } catch (err) {
+      console.error("Ошибка завершения теста:", err);
+      setError(err instanceof Error ? err.message : "Неизвестная ошибка");
       setStep("error");
-    } finally {
-      setLoading(false);
     }
   };
 
-  const allQuestions = questionGroups
-    .flatMap((group) => group.questions)
-    .sort((a, b) => a.order - b.order);
+  const restartTest = () => {
+    setStep("level");
+    setQuestionGroups([]);
+    setCurrentGroupIndex(0);
+    setQuestions([]);
+    setCurrentQuestionIndex(0);
+    setAnswers([]);
+    setResult(null);
+    setError(null);
+    setSessionId(null);
+    setSelectedLevelId(null);
+  };
 
-  if (loading) {
-    return (
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
-    );
-  }
+  const startQuiz = () => {
+    if (isAuthenticated) {
+      loadLevels();
+    } else {
+      setStep("auth_required");
+    }
+  };
+
+  const goToLogin = () => {
+    window.location.href = "/login?redirect=" + encodeURIComponent(window.location.pathname);
+  };
+
+  useEffect(() => {
+    if (step === "intro") {
+      // Предзагрузка данных при монтировании
+      loadLevels();
+    }
+  }, [isAuthenticated]);
+
+  const currentQuestion = questions[currentQuestionIndex];
+  const currentGroup = questionGroups[currentGroupIndex];
 
   return (
     <div className="quiz-container">
+      {step === "intro" && (
+        <div className="quiz-intro">
+          <div className="intro-card">
+            <h2>Хотели бы узнать, какое направление и профессия вам подойдут?</h2>
+            <p>Пройдите наш тест и получите персональные рекомендации</p>
+            <button className="start-quiz-button" onClick={startQuiz}>
+              Пройти тест
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === "loading" && (
+        <div className="quiz-loading">
+          <div className="spinner"></div>
+          <p>Загрузка...</p>
+        </div>
+      )}
+
+      {step === "auth_required" && (
+        <div className="auth-message">
+          <p>Пожалуйста авторизуйтесь, для прохождения теста</p>
+          <button className="auth-button" onClick={goToLogin}>
+            Авторизоваться
+          </button>
+        </div>
+      )}
+
       {step === "level" && (
-        <div className="level-section">
-          <h2 className="section-title">Выберите уровень образования</h2>
+        <div className="level-selection">
+          <h2>Выберите уровень образования</h2>
           <div className="levels-grid">
-            {levels.map((level) => (
+            {levels.map(level => (
               <button
-                key={level.id}
+                key={`level-${level.id}`}
                 className="level-card"
-                onClick={() => handleLevelSelect(level.id)}
+                onClick={() => loadQuestionGroups(level.id)}
               >
-                {level.name}
+                <span>{level.name}</span>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {step === "questions" && allQuestions.length > 0 && (
-        <div className="question-section">
-          <div className="progress-counter">
-            Вопрос {currentQuestionIndex + 1} из {allQuestions.length}
-          </div>
-          <h2 className="question-text">{allQuestions[currentQuestionIndex].text}</h2>
-          <div className="options-grid">
-            {allQuestions[currentQuestionIndex].options.map((option) => (
-              <button
-                key={option.id}
-                className="option-button"
-                onClick={() => handleAnswerSelect(option.id)}
-              >
-                {option.text}
-              </button>
+      {step === "groups" && (
+        <div className="groups-selection">
+          <h2>Группы вопросов</h2>
+          <div className="groups-list">
+            {questionGroups.map((group, index) => (
+              <div key={`group-${group.id}`} className="group-item">
+                <h3>{group.name}</h3>
+                <p>Количество вопросов: {group.questions.length}</p>
+                {index === 0 && (
+                  <button 
+                    className="start-test-button"
+                    onClick={startTest}
+                  >
+                    Начать тест
+                  </button>
+                )}
+              </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {step === "questions" && currentQuestion && currentGroup && (
+        <div className="question-screen">
+          <div className="progress-bar">
+            <div 
+              className="progress-fill"
+              style={{
+                width: `${((currentGroupIndex * questions.length + currentQuestionIndex + 1) / 
+                  (questionGroups.reduce((acc, group) => acc + group.questions.length, 0)) * 100)}%`
+              }}
+            ></div>
+          </div>
+          <div className="progress-text">
+            Группа {currentGroupIndex + 1} из {questionGroups.length} • 
+            Вопрос {currentQuestionIndex + 1} из {questions.length}
+          </div>
+          <div className="question-content">
+            <h3>{currentGroup.name}</h3>
+            <h4>{currentQuestion.text}</h4>
+            <div className="options">
+              {currentQuestion.options.map(option => (
+                <button
+                  key={`option-${option.id}`}
+                  className="option"
+                  onClick={() => handleAnswer(option.id)}
+                >
+                  {option.text}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
       {step === "result" && result && (
-        <div className="result-section">
-          <h2 className="section-title">Рекомендуемые программы</h2>
-          <div className="programs-list">
-            {result.recommended_programs.map((program) => (
-              <div key={program.id} className="program-card">
-                <h3 className="program-title">{program.program_name}</h3>
-                <div className="program-meta">
-                  <span className="program-code">{program.code}</span>
-                  <span className="program-form">{program.form}</span>
+        <div className="result-screen">
+          <h2>Рекомендуемые программы</h2>
+          <button className="restart-button" onClick={restartTest}>
+            Пройти тест снова
+          </button>
+          <div className="pt-programs">
+            {result.recommended_programs.map(program => (
+              <div key={`program-${program.id}`} className="pt-program-card">
+                <h3>{program.program_name}</h3>
+                <div className="pt-program-meta">
+                  <span>Уровень: {program.level.name}</span>
                 </div>
-                <p className="program-description">{program.description}</p>
-                
-                <div className="program-department">
-                  <h4>Факультет:</h4>
-                  <p>{program.department.name}</p>
-                </div>
-
-                {program.features.length > 0 && (
-                  <div className="program-features">
-                    <h4>Особенности программы:</h4>
-                    {program.features.map((feature) => (
-                      <div key={feature.id} className="feature-item">
-                        <strong>{feature.title}</strong>
-                        <p>{feature.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="career-opportunities">
-                  <h4>Карьерные возможности:</h4>
-                  <ul>
-                    {program.career_opportunities.map((opportunity, idx) => (
-                      <li key={idx}>{opportunity}</li>
-                    ))}
-                  </ul>
-                </div>
+                <p className="pt-description">{program.description}</p>
               </div>
             ))}
           </div>
@@ -301,13 +445,9 @@ export const QuizComponent = () => {
       )}
 
       {step === "error" && (
-        <div className="error-section">
-          <h2 className="error-title">Произошла ошибка</h2>
-          <p className="error-text">Пожалуйста, попробуйте позже</p>
-          <button 
-            className="retry-button"
-            onClick={() => window.location.reload()}
-          >
+        <div className="error-message">
+          <p>{error || "Произошла неизвестная ошибка"}</p>
+          <button className="retry-button" onClick={restartTest}>
             Попробовать снова
           </button>
         </div>

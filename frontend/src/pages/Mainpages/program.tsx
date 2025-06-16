@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { ApiEndpointHelper } from "../../Context/AuthContext";
 
 interface Program {
     id: number;
@@ -69,7 +70,9 @@ export const Program = () => {
     };
 
     useEffect(() => {    
-        axios.get<Department[]>("https://tamik327.pythonanywhere.com/api/departments/with-programs/")
+        axios.get<Department[]>(ApiEndpointHelper.departaments(),{
+            withCredentials:true
+        })
             .then(response => {
                 setEducationLevels(organizeByEducationLevel(response.data));
                 setProgramsError(null);
@@ -85,49 +88,49 @@ export const Program = () => {
     };
 
     return(
-        <>
-            <h3 className="programm-h">Программы обучения</h3>
+        <div className="pg-container">
+            <h3 className="pg-header">Программы обучения</h3>
           
             {programsError ? (
-                <div className="error-message">⚠️ {programsError}</div>
+                <div className="pg-error-message">⚠️ {programsError}</div>
             ) : (
                 <>
-                    <div className="plashka-container">
+                    <div className="pg-plashka-container">
                         {educationLevels.map((level, index) => (
                             <div
                                 key={level.id}
-                                className={`plashka ${currentPlashka === index ? 'active' : ''}`}
+                                className={`pg-plashka ${currentPlashka === index ? 'pg-active' : ''}`}
                                 onClick={() => switchPlashka(index)}
                             >
-                                <div className="plashka-title">{level.name}</div>
+                                <div className="pg-plashka-title">{level.name}</div>
                             </div>
                         ))}
                     </div>
 
                     {educationLevels.length > 0 && (
-                        <div className="programs-container">
+                        <div className="pg-programs-container">
                             {educationLevels[currentPlashka].programs
-                                .slice(0, 2) // Take first 2 programs
+                                .slice(0, 2)
                                 .map((program) => (
-                                    <div className="program-card" key={program.id}>
-                                        <div className="program-header">
-                                            <h4 className="program-code">{program.code}</h4>
-                                            <h3 className="program-name">{program.program_name}</h3>
-                                            <p className="program-form">{program.form_display}</p>
+                                    <div className="pg-program-card" key={program.id}>
+                                        <div className="pg-program-header">
+                                            <h4 className="pg-program-code">{program.code}</h4>
+                                            <h3 className="pg-program-name">{program.program_name}</h3>
+                                            <p className="pg-program-form">{program.form_display}</p>
                                         </div>
 
-                                        <div className="program-content">
-                                            <div className="program-details">
-                                                <p className="program-description">{program.description}</p>
+                                        <div className="pg-program-content">
+                                            <div className="pg-program-details">
+                                                <p className="pg-program-description">{program.description}</p>
 
                                                 {program.features?.length > 0 && (
-                                                    <div className="features-section">
+                                                    <div className="pg-features-section">
                                                         <h5>Особенности программы:</h5>
-                                                        <div className="features-grid">
+                                                        <div className="pg-features-grid">
                                                             {program.features.map((feature) => (
-                                                                <div key={feature.id} className="feature-card">
-                                                                    <div className="feature-badge">✓</div>
-                                                                    <div className="feature-content">
+                                                                <div key={feature.id} className="pg-feature-card">
+                                                                    <div className="pg-feature-badge">✓</div>
+                                                                    <div className="pg-feature-content">
                                                                         <h6>{feature.title}</h6>
                                                                         <p>{feature.description}</p>
                                                                     </div>
@@ -138,11 +141,11 @@ export const Program = () => {
                                                 )}
 
                                                 {program.career_opportunities_list?.length > 0 && (
-                                                    <div className="career-section">
+                                                    <div className="pg-career-section">
                                                         <h5>Карьерные возможности:</h5>
-                                                        <div className="career-tags">
+                                                        <div className="pg-career-tags">
                                                             {program.career_opportunities_list.map((item, index) => (
-                                                                <span key={index} className="career-tag">
+                                                                <span key={index} className="pg-career-tag">
                                                                     {item}
                                                                 </span>
                                                             ))}
@@ -157,6 +160,6 @@ export const Program = () => {
                     )}
                 </>
             )}
-        </>
+        </div>
     )
 }

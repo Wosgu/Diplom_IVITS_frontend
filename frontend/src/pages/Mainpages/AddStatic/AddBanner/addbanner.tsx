@@ -1,5 +1,9 @@
 import { useState, useRef } from "react";
 import "./addbanner.css";
+import { ApiEndpointHelper } from "../../../../Context/AuthContext"; 
+import { useAuth } from "../../../../Context/AuthContext"; 
+import Cookies from 'js-cookie';
+import axios from "axios";
 
 interface AddBannerProps {
   onAddSuccess: () => void;
@@ -9,7 +13,7 @@ export const AddBanner = ({ onAddSuccess }: AddBannerProps) => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const API_URL = "https://tamik327.pythonanywhere.com/api/banners/";
+  const { isAuthenticated } = useAuth();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,7 +34,11 @@ export const AddBanner = ({ onAddSuccess }: AddBannerProps) => {
         throw new Error("Максимальный размер файла - 5MB");
       }
 
-      const token = localStorage.getItem("accessToken");
+      if (!isAuthenticated) {
+        throw new Error("Требуется авторизация");
+      }
+
+      const token = Cookies.get('access_token');
       if (!token) {
         throw new Error("Требуется авторизация");
       }
@@ -38,22 +46,13 @@ export const AddBanner = ({ onAddSuccess }: AddBannerProps) => {
       const formData = new FormData();
       formData.append("image", file, file.name);
 
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: formData,
+      await axios.post(ApiEndpointHelper.banners(), formData, {
+        withCredentials: true,
         headers: {
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
         }
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.detail || 
-          errorData.image?.[0] || 
-          `Ошибка сервера: ${response.status}`
-        );
-      }
 
       // Успешная загрузка
       onAddSuccess();
@@ -63,7 +62,18 @@ export const AddBanner = ({ onAddSuccess }: AddBannerProps) => {
         fileInputRef.current.value = "";
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ошибка при загрузке");
+      if (axios.isAxiosError(err)) {
+        // Обработка ошибок axios
+        const errorData = err.response?.data;
+        setError(
+          errorData?.detail || 
+          errorData?.image?.[0] || 
+          err.message ||
+          "Ошибка при загрузке файла"
+        );
+      } else {
+        setError(err instanceof Error ? err.message : "Неизвестная ошибка");
+      }
       console.error("Ошибка:", err);
     } finally {
       setIsLoading(false);

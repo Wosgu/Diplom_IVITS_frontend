@@ -1,0 +1,344 @@
+/* Базовые стили */
+.documents-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* Заголовок */
+.documents-header {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.documents-header h1 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Таблица */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.documents-table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.documents-table th {
+  background-color: #3498db;
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.documents-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+
+.documents-table tr:last-child td {
+  border-bottom: none;
+}
+
+.document-title {
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 5px;
+  word-break: break-word;
+}
+
+.document-meta {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+.view-pdf-link {
+  display: inline-block;
+  background-color: #3498db;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.view-pdf-link:hover {
+  background-color: #2980b9;
+}
+
+/* Кнопка добавления */
+.add-document-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  align-self: flex-start;
+}
+
+.add-document-button:hover {
+  background-color: #2980b9;
+}
+
+.add-document-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* Модальное окно */
+.document-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  max-width: 95%;
+  width: 500px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.document-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.document-modal h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+
+/* Форма */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 10px 0;
+}
+
+.file-error {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+.file-hint {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* Кнопки модального окна */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  color: #7f8c8d;
+  border: 1px solid #ddd;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.submit-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+}
+
+.submit-button:hover {
+  background-color: #2980b9;
+}
+
+.submit-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* Состояния загрузки и ошибки */
+.documents-loading,
+.documents-error {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-documents {
+  text-align: center;
+  padding: 40px 20px;
+  color: #7f8c8d;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .documents-header {
+    flex-direction: column;
+  }
+  
+  .documents-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .document-modal {
+    width: 90%;
+    padding: 20px;
+  }
+  
+  .modal-buttons {
+    flex-direction: column;
+  }
+  
+  .modal-buttons button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .documents-container {
+    padding: 15px;
+  }
+  
+  .documents-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .documents-table th,
+  .documents-table td {
+    padding: 10px;
+  }
+  
+  .view-pdf-link {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 600px) {
+  .table-responsive {
+    overflow-x: hidden;
+  }
+
+  .documents-table {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+
+  .documents-table thead {
+    display: none;
+  }
+
+  .documents-table tr {
+    display: block;
+    margin-bottom: 15px;
+    background-color: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .documents-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .documents-table td:last-child {
+    border-bottom: none;
+  }
+
+  .documents-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #34495e;
+    flex: 1;
+    margin-right: 10px;
+  }
+
+  .documents-table td {
+    flex: 2;
+    color: #2c3e50;
+    word-break: break-word;
+  }
+}

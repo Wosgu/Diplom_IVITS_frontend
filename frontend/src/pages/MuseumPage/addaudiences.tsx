@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { ApiEndpointHelper, useAuth } from '../../Context/AuthContext';
 import './addaudiences.css';
 
 export const Addaudiences = () => {
@@ -12,6 +13,7 @@ export const Addaudiences = () => {
   });
   const [errors, setErrors] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const { isAuthenticated, getAuthHeader } = useAuth();
 
   const validateForm = () => {
     const newErrors: string[] = [];
@@ -34,20 +36,18 @@ export const Addaudiences = () => {
     if (!validateForm()) return;
 
     setSubmitting(true);
-    const token = localStorage.getItem('accessToken');
     
     try {
       // Шаг 1: Создание аудитории
       const audienceResponse = await axios.post(
-        'https://tamik327.pythonanywhere.com/api/audiences/',
+        ApiEndpointHelper.audiences(),
         {
           name: formData.name,
           description: formData.description
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
+          withCredentials: true,
+          ...getAuthHeader()
         }
       );
 
@@ -61,11 +61,12 @@ export const Addaudiences = () => {
         imageFormData.append('description', img.description);
 
         return axios.post(
-          'https://tamik327.pythonanywhere.com/api/audience-images/',
+          ApiEndpointHelper.audienceimages(),
           imageFormData,
           {
+            withCredentials: true,
             headers: {
-              Authorization: `Bearer ${token}`,
+              ...(await getAuthHeader()).headers,
               'Content-Type': 'multipart/form-data',
             }
           }
@@ -75,16 +76,15 @@ export const Addaudiences = () => {
       // Шаг 3: Добавление характеристик
       const characteristicPromises = formData.characteristics.map(char => 
         axios.post(
-          'https://tamik327.pythonanywhere.com/api/characteristics/',
+          ApiEndpointHelper.characteristics(),
           {
             audience: audienceId,
             name: char.name,
             value: char.value
           },
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            }
+            withCredentials: true,
+            ...getAuthHeader()
           }
         )
       );
@@ -125,7 +125,7 @@ export const Addaudiences = () => {
 
   return (
     <>
-      {localStorage.getItem('accessToken') && (
+      {isAuthenticated && (
         <button 
           className="gradient-action-btn"
           onClick={() => setShowForm(true)}
@@ -157,7 +157,6 @@ export const Addaudiences = () => {
             )}
 
             <form onSubmit={handleSubmit}>
-              {/* Поля названия и описания аудитории */}
               <div className="form-group">
                 <label>Название аудитории *</label>
                 <input
@@ -179,7 +178,6 @@ export const Addaudiences = () => {
                 />
               </div>
 
-              {/* Блок загрузки изображений */}
               <div className="form-group">
                 <label>Изображения (максимум 5)</label>
                 <div className="file-upload-wrapper">
@@ -210,7 +208,7 @@ export const Addaudiences = () => {
                           onClick={() => setFormData(prev => ({
                             ...prev,
                             images: prev.images.filter((_, i) => i !== index)
-                    }))}
+                          }))}
                         >
                           ×
                         </button>
@@ -220,7 +218,6 @@ export const Addaudiences = () => {
                 </div>
               </div>
 
-              {/* Блок характеристик */}
               <div className="form-group">
                 <label>Характеристики</label>
                 <div className="characteristics-container">

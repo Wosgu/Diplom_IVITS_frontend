@@ -1,4 +1,8 @@
+import { Link } from 'react-router-dom';
 import './about.css';
+import { FacultyCards } from './Faculty/FacultyCards';
+import { EventCalendar } from '../StudPage/eventcalendar';
+import { Assistant } from '../Assistant/assistant';
 
 export const About = () => {
   interface ContactInfo {
@@ -86,7 +90,7 @@ export const About = () => {
         </div>
       </section>
 
-      <main className="main-content">
+      <main className="main-container">
         <section className="history-section">
           <h2 className="section-title">История создания</h2>
           <div className="timeline">
@@ -120,7 +124,7 @@ export const About = () => {
           </div>
 
           <div className="institute-structure">
-          <h3>Современная структура</h3>
+            <h3>Современная структура</h3>
             <div className="structure-grid">
               <div className="structure-card">
                 <div className="structure-icon">🏛️</div>
@@ -129,7 +133,7 @@ export const About = () => {
                   <p>Административный и управленческий центр ВИТШ</p>
                 </div>
               </div>
-              
+
               <div className="structure-card">
                 <div className="structure-icon">📐</div>
                 <div className="structure-content">
@@ -163,18 +167,27 @@ export const About = () => {
               </div>
             </div>
           </div>
+
+          <FacultyCards />
+
           <div className="partners-block">
             <h3>Генеральный партнер</h3>
-              <div className="partner-logo">
-                <img src="/sovcombank.png" alt="Совкомбанк" />
-              </div>
-              <p className="partner-description">
-                Совместные программы подготовки специалистов в области информационных технологий
-              </p>
-              <p className="partner-info">
-                    Реализация новой концепции подготовки IT-специалистов 
-                    через частно-государственное партнерство.
-              </p>
+            <div className="partner-logo">
+              <img src="/sovcombank.png" alt="Совкомбанк" />
+            </div>
+            <p className="partner-description">
+              Совместные программы подготовки специалистов в области информационных технологий
+            </p>
+            <p className="partner-info">
+              Реализация новой концепции подготовки IT-специалистов
+              через частно-государственное партнерство.
+            </p>
+          </div>
+
+          <div className="documents-button-container">
+            <Link to="/documents" className="documents-button">
+              Документы института
+            </Link>
           </div>
         </section>
 
@@ -197,7 +210,7 @@ export const About = () => {
               </article>
             ))}
           </div>
-          
+
         </section>
 
         <section className="it-history-section">
@@ -219,7 +232,7 @@ export const About = () => {
                 </ul>
               </div>
             </details>
-            
+
             <details className="accordion-item">
               <summary className="accordion-header">КГУ им. Некрасова</summary>
               <div className="accordion-content">
@@ -235,6 +248,8 @@ export const About = () => {
           </div>
         </section>
       </main>
+      <EventCalendar />
+      <Assistant />
     </div>
   );
 };

@@ -1,58 +1,200 @@
-// components/Layout.tsx
-import { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link, Outlet } from "react-router-dom";
-import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaVk, FaTelegram, FaChevronDown, FaChevronUp, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaVk, FaTelegram, FaChevronDown, FaChevronUp, FaUser, FaSignOutAlt, FaUsersCog, FaCog, FaFileAlt } from "react-icons/fa";
+import { useAuth, AuthProvider } from "../Context/AuthContext";
 import './index.css';
 
-interface UserData {
-  username: string;
-  email: string;
-  role: string;
-  groups: number[];
+interface ExpandedSections {
+  profile: boolean;
 }
 
 export const Header = () => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const { isAuthenticated, userData, logout, checkAuth } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
+    profile: false
+  });
+
+  const userDropdownRef = useRef<HTMLDivElement>(null);
+  const burgerMenuRef = useRef<HTMLButtonElement>(null);
+  const mobileMenuRef = useRef<HTMLElement>(null);
+
+  const isAdmin = userData?.role === "admin";
+  const isModerator = userData?.role === "moderator";
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      setIsAuthenticated(true);
-      axios.get("http://tamik327.pythonanywhere.com/api/users/me/", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .then(response => {
-        setUserData(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching user data:", error);
-        setIsAuthenticated(false);
-      });
-    }
-  }, []);
+    checkAuth();
+  }, [checkAuth]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setIsAuthenticated(false);
-    setUserData(null);
-    setIsUserDropdownOpen(false);
-    navigate("/");
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setIsUserDropdownOpen(false);
+      }
+
+      if (isMenuOpen &&
+        burgerMenuRef.current && !burgerMenuRef.current.contains(event.target as Node) &&
+        mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsUserDropdownOpen(false);
+      setIsMenuOpen(false);
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+    }
   };
+
+  const handleAdminPanelClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsUserDropdownOpen(false);
+    setIsMenuOpen(false);
+    navigate("/adminpanel");
+  };
+
+  const handleSettingsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate("#");
+  };
+
+  const renderUserDropdown = () => (
+    <motion.div
+      className="user-dropdown"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div className="dropdown-content">
+        <Link to="/personalaccount" className="dropdown-item" onClick={() => setIsUserDropdownOpen(false)}>
+          <FaUser className="dropdown-icon" />
+          <span>Личный кабинет</span>
+        </Link>
+        <Link 
+          to={isAdmin ? "/adminstatements" : "/statements"} 
+          className="dropdown-item" 
+          onClick={() => setIsUserDropdownOpen(false)}
+        >
+          <FaFileAlt className="dropdown-icon" />
+          <span>{isAdmin ? "Заявки" : "Мои заявления"}</span>
+        </Link>
+        {(isAdmin || isModerator) && (
+          <Link to="/adminpanel" className="dropdown-item" onClick={handleAdminPanelClick}>
+            <FaUsersCog className="dropdown-icon" />
+            <span>Управление пользователями</span>
+          </Link>
+        )}
+        <Link to="#" className="dropdown-item" onClick={handleSettingsClick}>
+          <FaCog className="dropdown-icon" />
+          <span>Настройки</span>
+        </Link>
+        <div className="dropdown-item" onClick={handleLogout}>
+          <FaSignOutAlt className="dropdown-icon" />
+          <span>Выйти</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  const renderMobileUserMenu = () => (
+    <li className="mobile-section">
+      <div 
+        className="mobile-section-header"
+        onClick={() => setExpandedSections(prev => ({
+          ...prev,
+          profile: !prev.profile
+        }))}
+      >
+        <div className="mobile-user-preview">
+          <div className="mobile-avatar">
+            <img src={userData?.vk_avatar || '/default_avatar.jpg'} alt="Аватар" />
+          </div>
+          <span className="mobile-username">{userData?.username}</span>
+        </div>
+        {expandedSections.profile ? <FaChevronUp /> : <FaChevronDown />}
+      </div>
+      <AnimatePresence>
+        {expandedSections.profile && (
+          <motion.div
+            className="mobile-profile-content"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link
+              to="/personalaccount"
+              className="mobile-profile-link"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FaUser className="mobile-link-icon" />
+              Личный кабинет
+            </Link>
+            <Link
+              to={isAdmin ? "/adminstatements" : "/statements"}
+              className="mobile-profile-link"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FaFileAlt className="mobile-link-icon" />
+              {isAdmin ? "Заявки" : "Мои заявления"}
+            </Link>
+            {(isAdmin || isModerator) && (
+              <Link
+                to="/adminpanel"
+                className="mobile-profile-link"
+                onClick={handleAdminPanelClick}
+              >
+                <FaUsersCog className="mobile-link-icon" />
+                Управление пользователями
+              </Link>
+            )}
+            <div
+              className="mobile-profile-link"
+              onClick={handleSettingsClick}
+            >
+              <FaCog className="mobile-link-icon" />
+              Настройки
+            </div>
+            <button
+              className="mobile-logout"
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt className="mobile-link-icon" />
+              Выйти
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </li>
+  );
 
   return (
     <header className="header">
       <div className="logo">
         <div className="img_logo">
-          <img src="/logo.svg" alt="Логотип" />
+          <img src='/logo.svg' alt="Логотип" />
         </div>
         <div className="text_logo">
           <Link to="/" style={{ textDecoration: 'none' }}>
@@ -73,21 +215,23 @@ export const Header = () => {
 
       <div className="header-right">
         {!isAuthenticated ? (
-          <button 
-            className="login-btn" 
-            onClick={() => navigate("/login")}
-          >
-            Войти
-          </button>
+          <div className="desktop-only">
+            <button
+              className="login-btn"
+              onClick={() => navigate("/login")}
+            >
+              Войти
+            </button>
+          </div>
         ) : (
-          <div className="user-panel">
-            <div 
+          <div className="user-panel" ref={userDropdownRef}>
+            <div
               className="user-main-info"
               onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
             >
               <div className="avatar-container">
-                <img 
-                  src="/default_avatar.jpg" 
+                <img
+                  src={userData?.vk_avatar || '/default_avatar.jpg'}
                   alt="Аватар"
                   className="user-avatar"
                 />
@@ -98,46 +242,21 @@ export const Header = () => {
               </div>
             </div>
 
-            {isUserDropdownOpen && (
-              <motion.div 
-                className="user-dropdown"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="dropdown-content">
-                  <Link 
-                    to="/personalaccount" 
-                    className="dropdown-item"
-                    onClick={() => setIsUserDropdownOpen(false)}
-                  >
-                    <FaUser className="dropdown-icon" />
-                    <span>Личный кабинет</span>
-                  </Link>
-                  <div 
-                    className="dropdown-item"
-                    onClick={handleLogout}
-                  >
-                    <FaSignOutAlt className="dropdown-icon" />
-                    <span>Выйти</span>
-                  </div>
-                </div>
-              </motion.div>
-            )}
+            {isUserDropdownOpen && renderUserDropdown()}
           </div>
         )}
-
-        <button 
-          className="burger-btn"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Меню"
-        >
-          <div className={`burger-line ${isMenuOpen ? "open" : ""}`} />
-          <div className={`burger-line ${isMenuOpen ? "open" : ""}`} />
-          <div className={`burger-line ${isMenuOpen ? "open" : ""}`} />
-        </button>
       </div>
+
+      <button
+        className="burger-btn"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        aria-label="Меню"
+        ref={burgerMenuRef}
+      >
+        <div className={`burger-line ${isMenuOpen ? "open" : ""}`} />
+        <div className={`burger-line ${isMenuOpen ? "open" : ""}`} />
+        <div className={`burger-line ${isMenuOpen ? "open" : ""}`} />
+      </button>
 
       <AnimatePresence>
         {isMenuOpen && (
@@ -147,6 +266,7 @@ export const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
+            ref={mobileMenuRef}
           >
             <ul>
               <li><Link to="/about" onClick={() => setIsMenuOpen(false)}>Сведения об организации</Link></li>
@@ -154,35 +274,10 @@ export const Header = () => {
               <li><Link to="/stud" onClick={() => setIsMenuOpen(false)}>Студенту</Link></li>
               <li><Link to="/lifeinst" onClick={() => setIsMenuOpen(false)}>Жизнь института</Link></li>
               <li><Link to="/museum" onClick={() => setIsMenuOpen(false)}>Музей</Link></li>
-              
-              {isAuthenticated ? (
-                <li className="mobile-user-info">
-                  <div className="mobile-avatar">
-                    <img 
-                      src="/default_avatar.jpg" 
-                      alt="Аватар"
-                    />
-                  </div>
-                  <div className="mobile-user-details">
-                    <span className="mobile-username">{userData?.username}</span>
-                    <Link 
-                      to="/personalaccount" 
-                      className="mobile-profile-link"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Личный кабинет
-                    </Link>
-                    <button 
-                      className="mobile-logout"
-                      onClick={handleLogout}
-                    >
-                      Выйти
-                    </button>
-                  </div>
-                </li>
-              ) : (
+
+              {isAuthenticated ? renderMobileUserMenu() : (
                 <li>
-                  <button 
+                  <button
                     className="mobile-login-btn"
                     onClick={() => {
                       navigate("/login");
@@ -228,12 +323,12 @@ export const Footer = () => {
 
 export const Layout = () => {
   return (
-    <>
+    <AuthProvider>
       <Header />
       <main style={{ display: "flex", flexGrow: 1, flexDirection: "column" }}>
         <Outlet />
       </main>
       <Footer />
-    </>
+    </AuthProvider>
   );
 };

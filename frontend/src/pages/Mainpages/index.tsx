@@ -1,169 +1,148 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./index.css";
 import { News } from "./news";
 import { Program } from "./program";
-import { Achievement } from "./achievement";
+import { Achievement } from "../Mainpages/Achievement/achievement";
 import { Reviews } from "./Reviews/reviews";
-import { AddBanner } from "./AddStatic/AddBanner/addbanner";
+import { Assistant } from "../Assistant/assistant";
+import { Banner } from "./Banner/banner";
+import { QuizComponent } from "../StudPage/quiztest";
+import { EventCalendar } from "../StudPage/eventcalendar";
 
-interface Banner {
+interface Video {
   id: number;
-  image_url: string | null;
-  created_at: string;
-  order: number;
-}
-
-interface ApiResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Banner[];
+  title: string;
+  file: string;
+  description: string;
 }
 
 export const MainPage = () => {
-  const [currentBannerSlide, setCurrentBannerSlide] = useState(0);
-  const [bannerDragStart, setBannerDragStart] = useState(0);
-  const [bannerImages, setBannerImages] = useState<Banner[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [videoData, setVideoData] = useState<Video | null>(null);
+  const [videoLoading, setVideoLoading] = useState(true);
+  const [error] = useState("");
+  const [videoError, setVideoError] = useState("");
+  const [poster, setPoster] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const API_BASE = "https://tamik327.pythonanywhere.com/api/banners/";
+  const VIDEO_API = "https://vits44.ru/api/videos/1/";
 
-  // Проверка прав администратора
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      // Здесь должна быть логика проверки роли пользователя
-      // Для примера просто проверяем наличие токена
-      setIsAdmin(true);
-    }
-  }, []);
-
-  const fetchBanners = async (url: string = API_BASE) => {
+  const fetchVideo = async () => {
     try {
-      setLoading(true);
-      setError("");
+      setVideoLoading(true);
+      setVideoError("");
 
-      const response = await fetch(url);
+      const response = await fetch(VIDEO_API);
 
       if (!response.ok) {
         throw new Error(`Ошибка HTTP: ${response.status}`);
       }
 
-      const data: ApiResponse = await response.json();
-      
-      setBannerImages(prev => {
-        // Для первой страницы заменяем весь список
-        if (url === API_BASE) {
-          return data.results.filter(b => b.image_url);
-        }
-        // Для последующих страниц добавляем к существующему списку
-        return [...prev, ...data.results.filter(b => b.image_url)];
-      });
-
-      // Если на странице 10 элементов, проверяем следующую страницу
-      if (data.results.length === 10 && data.next) {
-        await fetchBanners(data.next);
-      }
+      const data: Video = await response.json();
+      setVideoData(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ошибка сервера");
-      console.error("Ошибка загрузки баннеров:", err);
+      setVideoError(err instanceof Error ? err.message : "Ошибка загрузки видео");
+      console.error("Ошибка загрузки видео:", err);
     } finally {
-      setLoading(false);
+      setVideoLoading(false);
+    }
+  };
+
+  const generatePoster = () => {
+    if (!videoRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      setPoster(canvas.toDataURL("image/jpeg"));
     }
   };
 
   useEffect(() => {
-    fetchBanners();
+    fetchVideo();
   }, []);
 
-  const handleBannerDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    setBannerDragStart(clientX);
-  };
+  useEffect(() => {
+    if (videoData?.file && !poster) {
+      const tempVideo = document.createElement("video");
+      tempVideo.crossOrigin = "anonymous";
+      tempVideo.src = videoData.file;
 
-  const handleBannerDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
-    if (bannerImages.length === 0) return;
-    
-    const clientX = "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
-    const dragEnd = clientX;
-    const dragDistance = bannerDragStart - dragEnd;
+      tempVideo.onloadedmetadata = () => {
+        // Устанавливаем время для захвата кадра (1 секунда)
+        tempVideo.currentTime = Math.min(1, tempVideo.duration / 2);
+      };
 
-    if (Math.abs(dragDistance) > 50) {
-      setCurrentBannerSlide(prev => 
-        dragDistance > 0 
-          ? (prev + 1) % bannerImages.length
-          : (prev - 1 + bannerImages.length) % bannerImages.length
-      );
+      tempVideo.onseeked = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = tempVideo.videoWidth;
+        canvas.height = tempVideo.videoHeight;
+        const ctx = canvas.getContext("2d");
+
+        if (ctx) {
+          ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+          setPoster(canvas.toDataURL("image/jpeg"));
+        }
+      };
+
+      tempVideo.onerror = () => {
+        console.error("Ошибка загрузки видео для генерации превью");
+      };
     }
-  };
-
-  if (loading && bannerImages.length === 0) {
-    return <div className="loading">Загрузка баннеров...</div>;
-  }
+  }, [videoData, poster]);
 
   if (error) return <div className="error">Ошибка: {error}</div>;
 
   return (
     <>
-      <div className="fade-slider"
-          onMouseDown={handleBannerDragStart}
-          onMouseUp={handleBannerDragEnd}
-          onTouchStart={handleBannerDragStart}
-          onTouchEnd={handleBannerDragEnd}>
-          <div className="fade-slider__container">
-            {bannerImages.length > 0 ? (
-              bannerImages.map((banner, index) => (
-                <div 
-                  key={`banner-${banner.id}`}
-                  className={`fade-slider__item ${index === currentBannerSlide ? "is-active" : ""}`}
-                >
-                  <img 
-                    src={banner.image_url!} 
-                    alt={`Баннер ${index + 1}`} 
-                    className="fade-slider__image" 
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="fade-slider__item is-active">
-                <div className="no-banners">Нет доступных баннеров</div>
-              </div>
-            )}
-          </div>
-          {bannerImages.length > 0 && (
-            <div className="fade-slider__dots">
-              {bannerImages.map((_, index) => (
-                <button
-                  key={`dot-${index}`}
-                  className={`fade-slider__dot ${index === currentBannerSlide ? "is-selected" : ""}`}
-                  onClick={() => setCurrentBannerSlide(index)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      
-      {isAdmin && <AddBanner onAddSuccess={() => fetchBanners()} />}
-      
+      <Banner />
       <div className="main-index">
         <div className="index-info">
           <div className="rolikvits">
-            <iframe 
-              src="https://vk.com/video_ext.php?oid=-225482243&id=456239028&hash=79ad4cf4a97f74c3" 
-              allow="autoplay; encrypted-media" 
-              title="Видео о школе"
-            />
+            {videoLoading ? (
+              <div className="loading">Загрузка видео...</div>
+            ) : videoError ? (
+              <div className="error">Ошибка загрузки видео: {videoError}</div>
+            ) : videoData ? (
+              <>
+                {/* Скрытое видео для генерации превью */}
+                <video
+                  ref={videoRef}
+                  style={{ display: "none" }}
+                  src={videoData.file}
+                  onLoadedMetadata={generatePoster}
+                  crossOrigin="anonymous"
+                />
+                {/* Основное видео с превью */}
+                <video
+                  controls
+                  width="100%"
+                  height="auto"
+                  title={videoData.title}
+                  poster={poster || undefined}
+                  crossOrigin="anonymous"
+                >
+                  <source src={videoData.file} type="video/mp4" />
+                  Ваш браузер не поддерживает видео тег.
+                </video>
+              </>
+            ) : (
+              <div className="error">Видео не найдено</div>
+            )}
           </div>
         </div>
-        <News/>
-        <Program/>
-        <Achievement/>
-        <Reviews/>
+        <News />
+        <h3 className="programm-h">Профориентационное тестирование для Абитуриентов</h3>
+        <QuizComponent />
+        <Program />
+        <Achievement />
+        <Reviews />
+        <EventCalendar />
+        <Assistant />
       </div>
     </>
   );

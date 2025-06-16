@@ -8,6 +8,7 @@
     color: #1a202c;
   }
   
+  
   .university-header {
     text-align: center;
     margin-bottom: 3rem;
@@ -71,6 +72,7 @@
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
   }
   
   .contact-card {
@@ -283,6 +285,11 @@
   @media (max-width: 480px) {
     .about-container {
       padding: 1rem;
+      margin: 0%;
+    }
+    .partner-logo img {
+    height: 30px;
+    margin-top: 1rem;
     }
   
     .section-title {
@@ -432,7 +439,7 @@
 /* Дополнения для 412px и меньше */
 @media (max-width: 412px) {
   .about-container {
-    padding: 1rem 0.5rem;
+    padding: 1rem 0rem;
   }
 
   .university-header h1 {
@@ -578,4 +585,23 @@
   .structure-list li {
     font-size: 0.9rem;
   }
+}
+.documents-button-container {
+  margin: 40px 0;
+  text-align: center;
+}
+
+.documents-button {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #297ed3;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.documents-button:hover {
+  background-color: #1e6cb5;
 }

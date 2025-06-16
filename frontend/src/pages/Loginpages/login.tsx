@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Eye, EyeOff } from 'lucide-react';
 import { validateRegister, validateLogin } from '../../validations/loginvalid';
+import { useAuth } from '../../Context/AuthContext';
+import { VKAuthButton } from './VK/VKAuthButton';
 import './login.css';
+
+const API_BASE_URL = import.meta.env.VITE_BASE_URL_ENDPOINTS;
 
 interface PasswordInputProps {
   placeholder: string;
@@ -17,15 +21,15 @@ const PasswordInput: React.FC<PasswordInputProps> = ({ placeholder, value, onCha
 
   return (
     <div className="password-container">
-      <input 
-        type={showPassword ? "text" : "password"} 
-        placeholder={placeholder} 
-        value={value} 
+      <input
+        type={showPassword ? 'text' : 'password'}
+        placeholder={placeholder}
+        value={value}
         onChange={onChange}
         name={name}
       />
-      <button 
-        type="button" 
+      <button
+        type="button"
         className="eye-button"
         onClick={() => setShowPassword(!showPassword)}
       >
@@ -36,7 +40,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({ placeholder, value, onCha
 };
 
 export const Login = () => {
-  const [searchParams] = useSearchParams();
+  const { login } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
   const [isAgreementChecked, setIsAgreementChecked] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
@@ -52,89 +56,121 @@ export const Login = () => {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [successMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState('');
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const navigate = useNavigate();
 
-  // Обработка callback от VK
   useEffect(() => {
-    const code = searchParams.get('code');
-    if (code) {
-      handleVKCallback(code);
+    if (window.location.search.includes('access_token')) {
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [searchParams]);
+  }, []);
 
-  const handleVKCallback = async (code: string) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    if (name === 'phone') {
+      let cleaned = value.replace(/\D/g, '');
+      if (!cleaned.startsWith('7') && cleaned.length > 0) {
+        cleaned = '7' + cleaned;
+      }
+      const formatted = cleaned.slice(0, 11);
+      setFormData(prev => ({ ...prev, [name]: formatted }));
+      return;
+    }
+    
+    if (['firstName', 'lastName', 'middleName'].includes(name)) {
+      const formatted = value.charAt(0).toUpperCase() + value.slice(1);
+      setFormData(prev => ({ ...prev, [name]: formatted }));
+      return;
+    }
+    
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const resendConfirmationCode = async () => {
     setIsLoading(true);
     try {
-      const { data } = await axios.get(`https://tamik327.pythonanywhere.com/auth/vk/callback/?code=${code}`);
+      const res = await axios.post(`${API_BASE_URL}/api/register/init/`, {
+        username: formData.username,
+        phone: formData.phone,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        ...(formData.middleName ? { middle_name: formData.middleName } : {}),
+        password: formData.password,
+        password2: formData.confirmPassword,
+      }, { 
+        withCredentials: true 
+      });
       
-      if (data.status === 'success' && data.access_token && data.refresh_token) {
-        // Сохраняем токены и редиректим на главную
-        localStorage.setItem('accessToken', data.access_token);
-        localStorage.setItem('refreshToken', data.refresh_token);
-        navigate('/');
-      } else {
-        setErrors({ general: 'Не удалось авторизоваться через VK' });
+      if (res.status === 200) {
+        setErrors({});
       }
-    } catch (error) {
-      setErrors({ general: 'Ошибка авторизации через VK' });
-      console.error('VK auth error:', error);
+    } catch (error: any) {
+      if (error.response?.data) {
+        const apiErrors: Record<string, string> = {};
+        
+        if (error.response.data.username) {
+          apiErrors.username = Array.isArray(error.response.data.username) 
+            ? error.response.data.username[0] 
+            : error.response.data.username;
+        }
+        if (error.response.data.phone) {
+          apiErrors.phone = Array.isArray(error.response.data.phone) 
+            ? error.response.data.phone[0] 
+            : error.response.data.phone;
+        }
+        
+        setErrors(apiErrors);
+      } else {
+        setErrors({ general: 'Ошибка соединения с сервером. Пожалуйста, попробуйте позже.' });
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleVKLogin = () => {
-    window.location.href = 'https://tamik327.pythonanywhere.com/auth/vk/init/';
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '');
-    const formattedValue = value.startsWith('7') ? `+7${value.slice(1)}` : `+7${value}`;
-    setFormData(prev => ({ ...prev, phone: formattedValue.slice(0, 12) }));
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
   const handleConfirmCode = async () => {
+    setIsLoading(true);
     try {
-      await axios.post('https://tamik327.pythonanywhere.com/api/register/confirm/', {
+      const response = await axios.post(`${API_BASE_URL}/api/register/confirm/`, {
         phone: formData.phone,
-        code: confirmationCode
+        code: confirmationCode,
+      }, { 
+        withCredentials: true 
       });
 
-      // После подтверждения сразу логиним пользователя
-      try {
-        const { data } = await axios.post(
-          'https://tamik327.pythonanywhere.com/api/login/phone/',
-          {
-            phone: formData.phone.replace('+', ''),
-            password: formData.password
-          }
-        );
-
-        if (data.access && data.refresh) {
-          localStorage.setItem('accessToken', data.access);
-          localStorage.setItem('refreshToken', data.refresh);
-          navigate('/');
-        }
-      } catch (loginError) {
-        setErrors({ general: 'Авторизация после регистрации не удалась' });
+      if (response.status === 200) {
+        setShowConfirmation(false);
+        setRegistrationSuccess(true);
+        setIsRegister(false);
+        setFormData(prev => ({
+          ...prev,
+          password: '',
+          confirmPassword: ''
+        }));
       }
-
     } catch (error) {
       setErrors({ confirmation: 'Неверный код подтверждения' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    
+    setServerError('');
+
     if (isRegister) {
       const validationErrors = validateRegister(
         formData.username,
@@ -146,57 +182,97 @@ export const Login = () => {
         formData.confirmPassword,
         isAgreementChecked
       );
+      if (Object.keys(validationErrors).length > 0) return setErrors(validationErrors);
 
-      if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-        return;
-      }
-
+      setIsLoading(true);
       try {
-        await axios.post('https://tamik327.pythonanywhere.com/api/register/init/', {
+        const res = await axios.post(`${API_BASE_URL}/api/register/init/`, {
           username: formData.username,
           phone: formData.phone,
           first_name: formData.firstName,
           last_name: formData.lastName,
+          ...(formData.middleName ? { middle_name: formData.middleName } : {}),
           password: formData.password,
-          password2: formData.confirmPassword
+          password2: formData.confirmPassword,
+        }, { 
+          withCredentials: true 
         });
-        setShowConfirmation(true);
-      } catch (error: any) {
-        if (error.response?.data?.phone) {
-          setErrors({ phone: error.response.data.phone[0] });
+        
+        if (res.status === 200) {
+          setShowConfirmation(true);
         }
+      } catch (error: any) {
+        if (error.response?.data) {
+          const apiErrors: Record<string, string> = {};
+          
+          if (error.response.data.username) {
+            apiErrors.username = Array.isArray(error.response.data.username) 
+              ? error.response.data.username[0] 
+              : error.response.data.username;
+          }
+          if (error.response.data.phone) {
+            apiErrors.phone = Array.isArray(error.response.data.phone) 
+              ? error.response.data.phone[0] 
+              : error.response.data.phone;
+          }
+          if (error.response.data.password) {
+            apiErrors.password = Array.isArray(error.response.data.password) 
+              ? error.response.data.password[0] 
+              : error.response.data.password;
+          }
+          if (error.response.data.non_field_errors) {
+            apiErrors.general = Array.isArray(error.response.data.non_field_errors) 
+              ? error.response.data.non_field_errors[0] 
+              : error.response.data.non_field_errors;
+          }
+          
+          setErrors(apiErrors);
+          
+          if (Object.keys(apiErrors).length === 0) {
+            setServerError('Ошибка регистрации. Пожалуйста, проверьте введенные данные.');
+          }
+        } else {
+          setServerError('Ошибка соединения с сервером. Пожалуйста, попробуйте позже.');
+        }
+      } finally {
+        setIsLoading(false);
       }
     } else {
-      const validationErrors = validateLogin(formData.phone, formData.password);
-      
-      if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-        return;
-      }
+      const validationErrors = validateLogin(formData.username, formData.password);
+      if (Object.keys(validationErrors).length > 0) return setErrors(validationErrors);
 
+      setIsLoading(true);
       try {
-        const { data } = await axios.post(
-          'https://tamik327.pythonanywhere.com/api/login/phone/',
-          {
-            phone: formData.phone.replace('+', ''),
-            password: formData.password
-          }
-        );
+        const response = await axios.post(`${API_BASE_URL}/api/login/`, {
+          username: formData.username,
+          password: formData.password,
+        }, { 
+          withCredentials: true 
+        });
 
-        if (data.access && data.refresh) {
-          localStorage.setItem('accessToken', data.access);
-          localStorage.setItem('refreshToken', data.refresh);
+        if (response.status === 200) {
+          const userData = {
+            id: response.data.user_id,
+            username: response.data.username,
+            phone: response.data.phone || null,
+            first_name: response.data.first_name || '',
+            last_name: response.data.last_name || '',
+            middle_name: response.data.middle_name || '',
+            role: 'user',
+            email: response.data.email || '',
+            is_active: true
+          };
+          await login(response.data.access, userData);
           navigate('/');
-        } else {
-          setErrors({ general: 'Не удалось получить токены авторизации' });
         }
       } catch (error: any) {
         if (error.response?.status === 401) {
-          setErrors({ general: 'Неверный телефон или пароль' });
+          setErrors({ general: 'Неверный логин или пароль' });
         } else {
-          setErrors({ general: 'Ошибка сервера. Попробуйте позже.' });
+          setErrors({ general: 'Ошибка сервера. Пожалуйста, попробуйте позже.' });
         }
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -204,19 +280,26 @@ export const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-illustration">
-        <div className="illustration-placeholder"></div>
+        <div className="illustration-placeholder" >
+          <img className='illustr' src='/backgroungimg.jpg'/>
+        </div>
       </div>
 
       <div className="auth-content">
         <form onSubmit={handleSubmit} className="auth-form">
           <h2>{showConfirmation ? 'Подтверждение' : isRegister ? 'Создать аккаунт' : 'Добро пожаловать'}</h2>
 
-          {successMessage && <div className="success-message">{successMessage}</div>}
           {isLoading && <div className="loading-overlay">Загрузка...</div>}
+
+          {registrationSuccess && (
+            <div className="success-message">
+              Регистрация успешна! Теперь вы можете войти, используя свои учетные данные.
+            </div>
+          )}
 
           {showConfirmation ? (
             <div className="confirmation-section">
-              <p>Пожалуйста, введите код, отправленный на <strong>{formData.phone}</strong></p>
+              <p>Пожалуйста, введите код, отправленный на номер <strong>{formData.phone}</strong></p>
               <input
                 type="text"
                 value={confirmationCode}
@@ -226,85 +309,123 @@ export const Login = () => {
                 className={errors.confirmation ? 'error' : ''}
               />
               {errors.confirmation && <span className="error-message">{errors.confirmation}</span>}
-              <button 
-                type="button" 
-                className="submit-button"
-                onClick={handleConfirmCode}
-              >
-                Подтвердить
-              </button>
+              
+              <div className="confirmation-buttons">
+                <button 
+                  type="button" 
+                  className="submit-button"
+                  onClick={handleConfirmCode}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Проверка...' : 'Подтвердить'}
+                </button>
+                
+                <button
+                  type="button"
+                  className="resend-button"
+                  onClick={resendConfirmationCode}
+                  disabled={isLoading}
+                >
+                  Отправить код ещё раз
+                </button>
+              </div>
             </div>
           ) : (
             <>
-              {isRegister && (
+              {!isRegister && (
                 <>
                   <input
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    placeholder="Никнейм"
+                    placeholder="Логин"
                     className={errors.username ? 'error' : ''}
                   />
                   {errors.username && <span className="error-message">{errors.username}</span>}
                 </>
               )}
 
-              <input
-                name="phone"
-                value={formData.phone}
-                onChange={handlePhoneChange}
-                placeholder="+7XXXXXXXXXX"
-                className={errors.phone ? 'error' : ''}
-              />
-              {errors.phone && <span className="error-message">{errors.phone}</span>}
-
               {isRegister && (
                 <>
+                  <div className="form-field">
+                    <input
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      placeholder="Логин"
+                      className={errors.username ? 'error' : ''}
+                    />
+                    {errors.username && <span className="error-message">{errors.username}</span>}
+                  </div>
+
+                  <div className="form-field">
+                    <input
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="Телефон (начинайте ввод с цифры)"
+                      className={errors.phone ? 'error' : ''}
+                    />
+                    {errors.phone && <span className="error-message">{errors.phone}</span>}
+                  </div>
+
                   <div className="name-group">
-                    <input
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      placeholder="Имя"
-                      className={errors.firstName ? 'error' : ''}
-                    />
-                    <input
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      placeholder="Фамилия"
-                      className={errors.lastName ? 'error' : ''}
-                    />
+                    <div className="form-field">
+                      <input
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        placeholder="Имя"
+                        className={errors.firstName ? 'error' : ''}
+                      />
+                      {errors.firstName && <span className="error-message">{errors.firstName}</span>}
+                    </div>
+                    <div className="form-field">
+                      <input
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        placeholder="Фамилия"
+                        className={errors.lastName ? 'error' : ''}
+                      />
+                      {errors.lastName && <span className="error-message">{errors.lastName}</span>}
+                    </div>
                   </div>
                   
-                  <input
-                    name="middleName"
-                    value={formData.middleName}
-                    onChange={handleChange}
-                    placeholder="Отчество"
-                    className={errors.middleName ? 'error' : ''}
-                  />
-                  {errors.middleName && <span className="error-message">{errors.middleName}</span>}
+                  <div className="form-field">
+                    <input
+                      name="middleName"
+                      value={formData.middleName}
+                      onChange={handleChange}
+                      placeholder="Отчество (необязательно)"
+                      className={errors.middleName ? 'error' : ''}
+                    />
+                    {errors.middleName && <span className="error-message">{errors.middleName}</span>}
+                  </div>
                 </>
               )}
 
-              <PasswordInput
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Пароль"
-              />
-              {errors.password && <span className="error-message">{errors.password}</span>}
+              <div className="form-field">
+                <PasswordInput
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Пароль"
+                />
+                {errors.password && <span className="error-message">{errors.password}</span>}
+              </div>
 
               {isRegister && (
                 <>
-                  <PasswordInput
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="Повторите пароль"
-                  />
-                  {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+                  <div className="form-field">
+                    <PasswordInput
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="Повторите пароль"
+                    />
+                    {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+                  </div>
 
                   <label className="agreement-checkbox">
                     <input
@@ -312,42 +433,46 @@ export const Login = () => {
                       checked={isAgreementChecked}
                       onChange={(e) => setIsAgreementChecked(e.target.checked)}
                     />
-                    Принимаю{' '}
+                    Принимаю{'  '}
                     <button
                       type="button"
                       className="agreement-link"
                       onClick={() => setShowAgreement(true)}
                     >
-                      пользовательское соглашение
+                       пользовательское соглашение
                     </button>
                   </label>
                   {errors.agreement && <span className="error-message">{errors.agreement}</span>}
                 </>
               )}
 
+              {serverError && <div className="error-message general-error">{serverError}</div>}
               {errors.general && <div className="error-message general-error">{errors.general}</div>}
 
-              <button type="submit" className="submit-button">
-                {isRegister ? 'Зарегистрироваться' : 'Войти'}
+              <button type="submit" className="submit-button" disabled={isLoading}>
+                {isLoading 
+                  ? isRegister ? 'Регистрация...' : 'Вход...'
+                  : isRegister ? 'Зарегистрироваться' : 'Войти'}
               </button>
 
-              <button 
-                type="button" 
-                className="vk-login-button"
-                onClick={handleVKLogin}
-              >
-                <svg className="vk-icon" width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M12.65 18.24c-5.59 0-8.65-3.82-8.85-10.23h3.07c.15 4.88 2.44 6.97 4.46 7.37V8.01h2.91v4.23c2-.2 4.1-2.09 4.8-4.23h2.91c-.62 3.52-3.29 6.11-5.9 7.03 2.61.76 5.34 3.03 6.29 7.2h-3.36c-.72-2.62-2.86-4.38-5.33-4.6v4.6h-.4z"/>
-                </svg>
-                {isRegister ? 'Зарегистрироваться через VK' : 'Войти с VK ID'}
-              </button>
+              <VKAuthButton 
+                isRegister={isRegister} 
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+                setErrors={setErrors}
+              />
 
               <div className="auth-switch">
                 {isRegister ? 'Уже есть аккаунт? ' : 'Нет аккаунта? '}
                 <button
                   type="button"
                   className="switch-button"
-                  onClick={() => setIsRegister(!isRegister)}
+                  onClick={() => {
+                    setIsRegister(!isRegister);
+                    setRegistrationSuccess(false);
+                    setErrors({});
+                  }}
+                  disabled={isLoading}
                 >
                   {isRegister ? 'Войти' : 'Зарегистрироваться'}
                 </button>
@@ -361,7 +486,7 @@ export const Login = () => {
             <div className="modal-content">
               <h3>Пользовательское соглашение</h3>
               <div className="modal-text">
-                {/* Текст соглашения */}
+                <p>Здесь должно быть пользовательское соглашение...</p>
               </div>
               <button
                 className="modal-close"

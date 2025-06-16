@@ -1,11 +1,11 @@
-/* Основное содержимое */
+/* Основные стили для главной страницы */
 .main-index {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* /* Стили слайдера */
+/* Стили для слайдера баннеров */
 .fade-slider {
   margin-left: 1%;
   width: 98%;
@@ -59,9 +59,7 @@
   border: none;
   background: rgba(255, 255, 255, 0.4);
   cursor: pointer;
-  transition:
-    background 300ms ease,
-    transform 300ms ease;
+  transition: background 300ms ease, transform 300ms ease;
 }
 
 .fade-slider__dot.is-selected {
@@ -73,7 +71,7 @@
   background: rgba(255, 255, 255, 0.8);
 }
 
-/* Секция с видео и новостями */
+/* Стили для секции с видео */
 .index-info {
   display: flex;
   flex-direction: column;
@@ -95,14 +93,13 @@
   border-radius: 8px;
 }
 
+/* Стили для новостей */
 .info-ivits-small {
   padding: 40px 20px;
   background: #f8f9fa;
   margin: 30px 0;
   max-width: 1200px;
   border-radius: 10px;
-  /* margin-left: auto;
-  margin-right: auto; */
 }
 
 .news-grid {
@@ -148,15 +145,6 @@
   object-fit: cover;
 }
 
-.news-date {
-  display: flex;
-  font-size: 0.85rem;
-  color: #999;
-  margin-top: auto;
-  padding-top: 15px;
-  border-top: 1px solid #b1aeae;
-}
-
 .news-content {
   padding: 20px;
   flex-grow: 1;
@@ -198,181 +186,39 @@
   font-weight: 500;
 }
 
-/* Состояния загрузки и ошибок */
-.news-loading {
-  text-align: center;
-  padding: 30px;
-  color: #7f8c8d;
-  font-size: 1.2rem;
-}
-
-.news-error-message {
-  background: #ffe3e3;
-  color: #ff0000;
-  padding: 20px;
-  border-radius: 8px;
-  margin: 20px auto;
-  text-align: center;
-  border: 1px solid #ff8787;
-  font-weight: 500;
-  max-width: 600px;
-}
-
-/* Секция программ обучения */
-.programm-h {
-  text-align: center;
-  font-size: 28px;
-  margin: 40px 0 20px;
-  color: #2c3e50;
-}
-
-.programm-training {
-  display: flex;
-  margin: 30px 0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.program-info {
-  display: flex;
-  gap: 2rem;
-  margin-top: 1.5rem;
-}
-
-.program-image {
-  width: 300px;
-  height: auto;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.program-details {
-  flex: 1;
-}
-
-/* Стили для особенностей обучения */
-.learning-features {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
-}
-
-.features-grid {
-  display: grid;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.feature-card {
-  display: flex;
-  gap: 1rem;
-  padding: 1.2rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  transition: transform 0.2s;
-}
-
-.feature-card:hover {
-  transform: translateY(-2px);
-}
-
-.feature-icon {
-  color: #2ecc71;
-  font-size: 1.2rem;
-}
-
-/* Стили для карьерных возможностей */
-.career-opportunities {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
-}
-
-.career-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-top: 1rem;
-}
-
-.career-tag {
-  background: #3498db;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  transition: background 0.3s;
-  font-family: cursive;
-}
-
-.career-tag:hover {
-  background: #2980b9;
-}
-
-.learning-features h5 {
-  font-size: 18px;
-  font-family: 'Exo 2';
-  color: #2c3e50;
-}
-
-.feature-card h6 {
-  font-family: 'Exo 2';
-  font-size: 14px;
-}
-
-.career-opportunities h5 {
-  font-family: 'Exo 2';
-  font-size: 14px;
-}
-
-
-@font-face {
-  font-family: 'Exo 2';
-  src: url(/fonts/Exo2-Italic-VariableFont_wght.ttf);
-}
-
-@font-face {
-  font-family: 'IndieFlower';
-  src: url(/fonts/IndieFlower-Regular.ttf);
-}
-
-.error-message {
-  background: #ffe3e3;
-  color: #ff0000;
-  padding: 20px;
-  border-radius: 8px;
-  margin: 20px 0;
-  text-align: center;
-  border: 1px solid #ff8787;
-  font-weight: 500;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.programm-training {
-  padding: 2rem;
+/* Стили для программ обучения */
+/* Program component styles */
+.pg-container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 2rem;
 }
 
-.programm-h {
+.pg-header {
+  text-align: center;
   font-size: 2rem;
   color: #2c3e50;
   margin-bottom: 2rem;
-  text-align: center;
 }
 
-/* Плашки уровней образования */
-.plashka-container {
+.pg-error-message {
+  color: #e74c3c;
+  background: #fadbd8;
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.pg-plashka-container {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
-.plashka {
+.pg-plashka {
   padding: 1rem 2rem;
   background: #f8f9fa;
   border-radius: 8px;
@@ -381,97 +227,79 @@
   border: 1px solid #ddd;
 }
 
-.plashka.active {
+.pg-plashka.pg-active {
   background: #3498db;
   color: white;
   border-color: #3498db;
 }
 
-.plashka-title {
+.pg-plashka-title {
   font-weight: 500;
   font-size: 1.1rem;
 }
 
-/* Контейнер программ */
-.programs-container {
+.pg-programs-container {
   display: grid;
   gap: 2.5rem;
 }
 
-/* Карточка программы */
-.program-card {
+.pg-program-card {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 2rem;
 }
 
-.program-header {
+.pg-program-header {
   margin-bottom: 1.5rem;
   border-bottom: 2px solid #eee;
   padding-bottom: 1rem;
 }
 
-.program-code {
+.pg-program-code {
   color: #7f8c8d;
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
 
-.program-name {
+.pg-program-name {
   font-size: 1.5rem;
   color: #2c3e50;
   margin-bottom: 0.5rem;
 }
 
-.program-form {
+.pg-program-form {
   color: #3498db;
   font-weight: 500;
 }
 
-/* Контент программы */
-.program-content {
-  display: flex;
-  gap: 2rem;
+.pg-program-content {
   margin-top: 1.5rem;
 }
 
-.program-image {
-  width: 300px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-
-.program-details {
-  flex: 1;
-}
-
-.program-description {
+.pg-program-description {
   color: #34495e;
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
 
-/* Особенности программы */
-.features-section {
+.pg-features-section {
   margin-top: 2rem;
 }
 
-.features-section h5 {
+.pg-features-section h5 {
   color: #2c3e50;
   font-size: 1.2rem;
   margin-bottom: 1.2rem;
 }
 
-.features-grid {
+.pg-features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.2rem;
 }
 
-.feature-card {
+.pg-feature-card {
   display: flex;
   gap: 1rem;
   padding: 1.2rem;
@@ -480,7 +308,7 @@
   align-items: start;
 }
 
-.feature-badge {
+.pg-feature-badge {
   background: #2ecc71;
   color: white;
   width: 28px;
@@ -492,224 +320,42 @@
   flex-shrink: 0;
 }
 
-.feature-content h6 {
+.pg-feature-content h6 {
   color: #2c3e50;
   margin: 0 0 0.5rem 0;
   font-size: 1rem;
 }
 
-.feature-content p {
-  color: #7f8c8d;
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-/* Карьерные возможности */
-.career-section {
+.pg-career-section {
   margin-top: 2rem;
 }
 
-.career-section h5 {
+.pg-career-section h5 {
   color: #2c3e50;
   font-size: 1.2rem;
   margin-bottom: 1rem;
 }
 
-.career-tags {
+.pg-career-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
 }
 
-.career-tag {
+.pg-career-tag {
   background: #3498db;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.9rem;
-  transition: background 0.3s;
 }
 
-/* Ошибки */
-.error-message {
-  background: #ffe3e3;
-  color: #ff0000;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-  margin: 2rem 0;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .program-content {
-    flex-direction: column;
-  }
-
-  .program-image {
-    width: 100%;
-    height: auto;
-  }
-
-  .plashka {
-    flex: 1;
-    text-align: center;
-    padding: 1rem;
-  }
-}
-
-/* Слайдер достижений */
-.slider-section {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 2rem;
-  overflow: hidden;
-}
-
-.slider-title {
-  font-size: 2.5rem;
-  text-align: center;
-  margin-bottom: 3rem;
-  color: #2d3748;
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.slider-title::after {
-  content: '';
-  display: block;
-  width: 60px;
-  height: 4px;
-  background: #4299e1;
-  margin: 1rem auto 0;
-}
-
-.slider-wrapper {
-  position: relative;
-  overflow-x: hidden;
-  cursor: grab;
-  padding: 1rem 0;
-}
-
-.slider {
-  display: flex;
-  gap: 2rem;
-  user-select: none;
-}
-
-.slide {
-  flex: 0 0 calc(33.333% - 1.8rem);
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-}
-
-.slide:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.slide-image {
-  position: relative;
-  padding-top: 56.25%;
-  overflow: hidden;
-  user-select: none;
-  /* Добавляем запрет выделения */
-}
-
-.slide-image img {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.3s ease;
-  pointer-events: none;
-  /* Блокируем события мыши на изображении */
-  user-select: none;
-  /* Запрещаем выделение */
-  -webkit-user-drag: none;
-  /* Отключаем drag в WebKit */
-}
-
-.slide:hover .slide-image img {
-  transform: scale(1.05);
-}
-
-.slide-caption {
-  padding: 1.5rem;
-  background: white;
-}
-
-.slide-caption p {
-  font-size: 1.1rem;
-  color: #4a5568;
-  line-height: 1.5;
-  margin: 0;
-  text-align: center;
-  font-weight: 500;
-}
-
-@media (max-width: 768px) {
-  .slider-section {
-    padding: 2rem 1rem;
-  }
-
-  .slider-title {
-    font-size: 2rem;
-  }
-
-  .slide {
-    flex: 0 0 100%;
-    margin: 0 1rem;
-  }
-
-  .slider {
-    gap: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .slide-caption p {
-    font-size: 1rem;
-  }
-
-  .slider-title {
-    font-size: 1.75rem;
-  }
-}
-
-/* Основные стили секции отзывов */
-.testimonials-section {
-  border-radius: 10px;
-  margin: 0 0 50px 0;
-  background: linear-gradient(135deg, #eceef0 0%, #eceef0 100%);
-  padding: 20px 0;
-  position: relative;
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.section-title {
-  font-size: 24px;
-  color: #222;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-/* Стили для состояния загрузки и ошибок */
+/* Общие стили для состояния загрузки и ошибок */
 .loading {
   text-align: center;
   padding: 40px;
-  font-size: 18px;
-  color: #666;
+  color: #7f8c8d;
+  font-size: 1.2rem;
 }
 
 .error {
@@ -722,30 +368,31 @@
 }
 
 .error-message {
-  color: #ff4444;
-  margin: 20px 0;
-  padding: 15px;
-  background: rgba(255, 0, 0, 0.05);
+  background: #ffe3e3;
+  color: #ff0000;
+  padding: 20px;
   border-radius: 8px;
+  margin: 20px auto;
+  text-align: center;
+  border: 1px solid #ff8787;
+  font-weight: 500;
+  max-width: 600px;
 }
 
-.retry-button {
-  background: #0055ff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: all 0.3s;
+/* Адаптивные стили */
+@media (max-width: 1200px) {
+  .programm-training {
+    padding: 1.5rem;
+  }
+  .main-index{
+    max-width: 100%;
+  }
+  
+  .program-card {
+    padding: 1.5rem;
+  }
 }
 
-.retry-button:hover {
-  background: #0033cc;
-}
-
-
-/* Адаптивность */
 @media (max-width: 1024px) {
   .index-info {
     flex-direction: column;
@@ -755,283 +402,108 @@
     height: 350px;
   }
 
-  .slide {
-    flex: 0 0 40%;
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .program-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    height: auto;
-    padding: 15px;
-  }
-
-  .nav ul {
-    margin-top: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .programm-training {
-    flex-direction: column;
-  }
-
-  .plashka-container {
-    width: 100%;
-    display: flex;
-    overflow-x: auto;
-  }
-
-  .plashka {
-    min-width: 150px;
-    border-left: none;
-    border-bottom: 4px solid transparent;
-  }
-
-  .plashka.active {
-    border-left: none;
-    border-bottom: 4px solid #0055ff;
-  }
-
-  .info-block {
-    width: 100%;
-  }
-
-  .slide {
-    flex: 0 0 50%;
-  }
-}
-
-@media (max-width: 480px) {
-  .banner {
-    height: 300px;
-  }
-
-  .small-inf0-1 {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .small-inf0-1 img {
-    width: 100%;
-    height: 150px;
-    border-radius: 30px 30px 0 0;
-  }
-
-  .name-descr {
-    width: 100%;
-    padding: 15px;
-  }
-
-  .slide {
-    flex: 0 0 80%;
-  }
-
-  .footer-content {
-    flex-direction: column;
-  }
-
-  .address,
-  .contact-info {
-    margin-top: 20px;
-  }
-}
-
-/* Мобильная адаптация */
-@media (max-width: 768px) {
-
-  /* Шапка */
-  .header {
-    flex-direction: column;
-    height: auto;
-    padding: 15px;
-    gap: 15px;
-  }
-
-  .nav ul {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  .nav ul li {
-    margin: 0 8px;
-  }
-
-  .user-panel {
-    align-items: center;
-    margin-top: 10px;
-  }
-
-  /* Баннер */
   .fade-slider {
-    margin-left: 0;
-    width: 100%;
-    height: 300px;
+    height: 400px;
   }
-
-  /* Новости */
+  
   .news-grid {
     grid-template-columns: 1fr;
   }
-
-  .news-card {
-    margin: 0 10px;
+  
+  .programm-h {
+    font-size: 1.8rem;
   }
+  
+  .program-name {
+    font-size: 1.3rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-ivits-small {
+    padding: 30px 15px;
+  }
+}
 
-  /* Программы обучения */
+@media (max-width: 576px) {
+  .fade-slider {
+    height: 300px;
+    margin-left: 0;
+    width: 100%;
+    border-radius: 0;
+  }
+  
+  .fade-slider__image {
+    height: 100%;
+  }
+  
+  .rolikvits iframe {
+    height: 250px;
+  }
+  
   .programm-training {
-    flex-direction: column;
-    margin: 20px 10px;
+    padding: 1rem;
   }
-
-  .plashka-container {
-    flex-direction: row;
-    overflow-x: auto;
-    width: 100%;
-    padding: 10px 0;
+  
+  .program-card {
+    padding: 1rem;
   }
-
+  
   .plashka {
-    min-width: 200px;
-    border-left: none;
-    border-bottom: 3px solid transparent;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
   }
-
-  .plashka.active {
-    border-bottom-color: #0055ff;
+  
+  .news-image-wrapper {
+    height: 180px;
   }
+}
 
-  .info-block {
-    width: 100%;
-    padding: 20px;
+@media (max-width: 400px) {
+  .fade-slider {
+    height: 250px;
   }
-
-  .program-info {
-    flex-direction: column;
-  }
-
-  .program-image {
-    width: 100%;
+  
+  .rolikvits iframe {
     height: 200px;
   }
-
-  /* Слайдер мероприятий */
-  .slide {
-    flex: 0 0 80%;
+  
+  .news-excerpt {
+    font-size: 0.9rem;
   }
-
-  /* Отзывы */
-  .testimonial-card {
-    flex-direction: column;
-    padding: 20px;
-    text-align: center;
+  
+  .programm-h {
+    font-size: 1.6rem;
   }
-
-  .author-photo {
-    width: 150px;
-    height: 150px;
+  
+  .program-name {
+    font-size: 1.2rem;
   }
-
-  .testimonial-content {
-    padding-left: 0;
-  }
-
-  .testimonial-text {
-    font-family: 'Exo 2';
-  }
-
-  .testimonial-content::before {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .author-info {
-    border-left: none;
-    padding-left: 0;
-  }
-
-  /* Подвал */
-  .footer-content {
+  
+  .feature-card {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
-
-  .social-icons {
-    justify-content: center;
-    margin: 15px 0;
-  }
-}
-
-@media (max-width: 480px) {
-
-  /* Шапка */
-  .nav ul li {
-    margin: 0 5px;
-  }
-
-  .nav a {
-    font-size: 14px;
-  }
-
-  /* Баннер */
-  .fade-slider {
-    height: 250px;
-  }
-
-  /* Видео */
-  .rolikvits iframe {
-    height: 250px;
-  }
-
-  /* Программы */
-  .plashka {
-    min-width: 180px;
-    padding: 15px;
-  }
-
-  /* Слайдер */
-  .slide {
-    flex: 0 0 90%;
-  }
-
-  .slide-caption p {
-    font-size: 14px;
-  }
-
-  /* Текст */
-  h3.programm-h {
-    font-size: 24px;
-    margin: 30px 0 15px;
-  }
-
-  .section-title {
-    font-size: 22px;
-  }
-}
-
-/* Для очень маленьких экранов */
-@media (max-width: 360px) {
-  .header {
-    padding: 10px;
-  }
-
-  .logo h1 {
-    font-size: 20px;
-  }
-
-  .nav a {
-    font-size: 13px;
-  }
-
-  .login-btn {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-  .news-excerpt {
-    font-size: 14px;
+  
+  .feature-badge {
+    margin-bottom: 0.5rem;
   }
 }

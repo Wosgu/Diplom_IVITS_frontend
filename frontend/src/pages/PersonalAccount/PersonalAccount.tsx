@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { FaLock, FaGraduationCap, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
 import axios from 'axios';
+import { ApiEndpointHelper, useAuth } from '../../Context/AuthContext';
 import './PersonalAccount.css';
 
 interface UserData {
@@ -19,16 +19,14 @@ interface Group {
 }
 
 export const PersonalAccount = () => {
+  const { userData: authUser, logout, checkAuth, getAuthHeader } = useAuth();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const getAccessToken = () => localStorage.getItem('accessToken');
 
   useEffect(() => {
-    const token = getAccessToken();
-
-    if (!token) {
+    if (!authUser) {
       setError('Требуется авторизация');
       setLoading(false);
       return;
@@ -36,17 +34,16 @@ export const PersonalAccount = () => {
 
     const fetchData = async () => {
       try {
-        const apiClient = axios.create({
-          baseURL: 'https://tamik327.pythonanywhere.com/',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        // Проверяем актуальность токена
+        await checkAuth();
 
+        // Получаем заголовки авторизации с await
+        const authHeader = await getAuthHeader();
+
+        // Используем ApiEndpointHelper для получения URL
         const [userRes, groupsRes] = await Promise.all([
-          apiClient.get('/api/users/me/'),
-          apiClient.get('/api/groups/')
+          axios.get<UserData>(ApiEndpointHelper.userMe(), authHeader),
+          axios.get<Group[]>(ApiEndpointHelper.groups(), authHeader).catch(() => ({ data: [] }))
         ]);
 
         setUserData(userRes.data);
@@ -60,12 +57,13 @@ export const PersonalAccount = () => {
     };
 
     fetchData();
-  }, []);
+  }, [authUser, checkAuth, getAuthHeader]);
 
   const handleError = (error: unknown) => {
     if (axios.isAxiosError(error)) { 
       if (error.response?.status === 401) {
         setError('Сессия истекла. Войдите снова');
+        logout();
       } else {
         setError(`Ошибка ${error.response?.status || 'соединения'}`);
       }
@@ -78,47 +76,23 @@ export const PersonalAccount = () => {
     window.location.href = '/login';
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    window.location.reload();
-  };
-
   const getFullName = () => {
     if (!userData) return '';
     return `${userData.last_name} ${userData.first_name} ${userData.middle_name || ''}`.trim();
   };
 
   const getGroupNames = () => {
-    if (!userData || groups.length === 0) return 'Загрузка...';
-    return userData.groups
-      .map(g => groups.find(gr => gr.id === g)?.name || '???')
-      .join(', ');
+    if (!userData?.groups || !groups.length) return 'Нет групп';
+    
+    const groupNames = userData.groups
+      .map(groupId => {
+        const group = groups.find(g => g.id === groupId);
+        return group ? group.name : null;
+      })
+      .filter(Boolean);
+    
+    return groupNames.length > 0 ? groupNames.join(', ') : 'Нет групп';
   };
-
-  const renderCourses = () => (
-    <div className="courses-grid">
-      {[1, 2, 3, 4].map(course => (
-        <div key={course} className={`course-card ${course === 4 ? 'locked' : ''}`}>
-          {course === 4 && (
-            <div className="course-lock">
-              <FaLock size={20} />
-              <span>Доступ откроется позже</span>
-            </div>
-          )}
-          <div className="course-header">
-            <FaGraduationCap size={18} />
-            <h3>Курс {course}</h3>
-          </div>
-          <ul className="course-content">
-            {Array.from({ length: 5 }, (_, i) => (
-              <li key={i}>Тема {i + 1}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  );
 
   if (loading) {
     return (
@@ -133,13 +107,13 @@ export const PersonalAccount = () => {
       <div className="error-container">
         <h2>Ошибка</h2>
         <p>{error}</p>
-        {getAccessToken() ? (
-          <button onClick={handleLogout} className="logout-btn">
-            <FaSignOutAlt /> Выйти
+        {authUser ? (
+          <button onClick={logout} className="logout-btn">
+            Выйти
           </button>
         ) : (
           <button onClick={handleLogin} className="login-btn">
-            <FaSignInAlt /> Войти
+            Войти
           </button>
         )}
       </div>
@@ -166,9 +140,6 @@ export const PersonalAccount = () => {
             </div>
           </div>
         </div>
-        <button onClick={handleLogout} className="logout-btn">
-          <FaSignOutAlt /> Выйти
-        </button>
       </header>
 
       <main className="stud-content">
@@ -177,18 +148,13 @@ export const PersonalAccount = () => {
           <div className="profile-info">
             <div>
               <label>Email:</label>
-              <p>{userData?.email}</p>
+              <p>{userData?.email || 'Не указан'}</p>
             </div>
             <div>
               <label>Группы:</label>
               <p>{getGroupNames()}</p>
             </div>
           </div>
-        </section>
-
-        <section className="courses-section">
-          <h2>Прогресс обучения</h2>
-          {renderCourses()}
         </section>
       </main>
     </div>
